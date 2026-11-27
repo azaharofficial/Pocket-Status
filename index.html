@@ -1937,7 +1937,7 @@
             <li>Open <span class="font-bold text-slate-900">console.cloud.google.com</span>, create a project, and enable the <span class="font-bold text-slate-900">Google Drive API</span>.</li>
             <li>Go to <span class="font-bold text-slate-900">Credentials → Create Credentials → OAuth client ID → Web application</span>.</li>
             <li>Add your app origin under <span class="font-bold text-slate-900">Authorized JavaScript origins</span>, then copy the Client ID.</li>
-            <li>Paste the Client ID below — tapping <span class="font-bold text-indigo-700">One-Click Sync</span> connects and syncs <code class="px-1 py-0.5 rounded bg-slate-200 text-slate-800">My Drive / Pocket Status Backup / pocket-status-backup.json</code> automatically.</li>
+            <li>Paste the Client ID below — tapping <span class="font-bold text-indigo-700">One-Click Sync</span> connects and syncs <code id="driveGuidePathCode" class="px-1 py-0.5 rounded bg-slate-200 text-slate-800">My Drive / Apps/Pocket Apps/Backups/Pocket Status / pocket-status-backup.json</code> automatically.</li>
           </ol>
           <div class="pt-2 border-t border-slate-200 space-y-2">
             <p class="font-bold text-slate-800">Using offline APK / WebView?</p>
@@ -1959,6 +1959,12 @@
           <button id="connectDriveBtn" type="button" class="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-50 border border-slate-200 text-slate-800 text-xs font-bold transition active:scale-95">
             <span id="connectDriveLabel">🔗 Connect</span>
           </button>
+        </div>
+
+        <!-- Custom Google Drive Folder Path -->
+        <div class="space-y-1">
+          <label for="syncFolderPathInput" class="block text-[11px] font-bold text-slate-700">Drive Folder Path</label>
+          <input id="syncFolderPathInput" type="text" placeholder="Apps/Pocket Apps/Backups/Pocket Status" class="w-full h-9 px-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white" />
         </div>
 
         <!-- Back Up Now / Restore Now / Disconnect Row -->
@@ -2852,7 +2858,7 @@
       // =======================================================================
       const STORAGE_KEY = 'pocket_status_final_v1';
       const LEGACY_KEYS = ['pocket_status_v2', 'pocket_status_v1'];
-      const DRIVE_FOLDER_NAME = 'Pocket Status Backup';
+      const DEFAULT_DRIVE_FOLDER_PATH = 'Apps/Pocket Apps/Backups/Pocket Status';
       const BACKUP_FILENAME = 'pocket-status-backup.json';
       const CONTACT_EMAIL = 'azaharofficial@gmail.com';
 
@@ -2886,7 +2892,7 @@
         'July', 'August', 'September', 'October', 'November', 'December',
       ];
 
-      const APPS_SCRIPT_CODE = `const FOLDER_NAME = 'Pocket Status Backup';
+      const APPS_SCRIPT_CODE = `const DEFAULT_FOLDER_PATH = 'Apps/Pocket Apps/Backups/Pocket Status';
 const FILE_NAME = 'pocket-status-backup.json';
 const SECRET_PIN = '1234'; // Change this to your own secret PIN (must match Pocket Status)
 
@@ -2900,10 +2906,18 @@ function respond(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function getOrCreateFolder() {
-  const root = DriveApp.getRootFolder();
-  const folders = root.getFoldersByName(FOLDER_NAME);
-  return folders.hasNext() ? folders.next() : root.createFolder(FOLDER_NAME);
+function getOrCreateFolder(pathStr) {
+  const parts = String(pathStr || DEFAULT_FOLDER_PATH)
+    .split('/')
+    .map(function (s) { return s.trim(); })
+    .filter(Boolean);
+  let current = DriveApp.getRootFolder();
+  for (let i = 0; i < parts.length; i++) {
+    const name = parts[i];
+    const folders = current.getFoldersByName(name);
+    current = folders.hasNext() ? folders.next() : current.createFolder(name);
+  }
+  return current;
 }
 
 function doGet(e) {
@@ -2913,7 +2927,8 @@ function doGet(e) {
       return respond({ ok: false, error: 'Invalid Secret PIN' });
     }
     const action = params.action || 'ping';
-    const folder = getOrCreateFolder();
+    const folderPath = params.folderPath || DEFAULT_FOLDER_PATH;
+    const folder = getOrCreateFolder(folderPath);
     const files = folder.getFilesByName(FILE_NAME);
     const hasFile = files.hasNext();
 
@@ -2927,7 +2942,7 @@ function doGet(e) {
 
     if (action === 'restore') {
       if (!hasFile) {
-        return respond({ ok: false, error: 'No backup file found in My Drive / ' + FOLDER_NAME });
+        return respond({ ok: false, error: 'No backup file found in My Drive / ' + folderPath });
       }
       const content = files.next().getBlob().getDataAsString();
       return respond({ ok: true, payload: JSON.parse(content) });
@@ -2950,7 +2965,7 @@ function doPost(e) {
       return respond({ ok: false, error: 'Invalid backup payload' });
     }
     const text = JSON.stringify(body.payload, null, 2);
-    const folder = getOrCreateFolder();
+    const folder = getOrCreateFolder(body.folderPath || DEFAULT_FOLDER_PATH);
     const files = folder.getFilesByName(FILE_NAME);
     if (files.hasNext()) {
       files.next().setContent(text);
@@ -2969,6 +2984,17 @@ function doPost(e) {
         }
         return fallback;
       };
+
+      const normalizeDriveFolderPath = (rawPath) => {
+        const parts = String(rawPath || '')
+          .split('/')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        return parts.length > 0 ? parts.join('/') : DEFAULT_DRIVE_FOLDER_PATH;
+      };
+
+      const getDriveFolderPath = () =>
+        normalizeDriveFolderPath(state?.store?.syncConfig?.folderPath);
 
       const ACCOUNT_TYPES = {
         saving: {
@@ -3372,6 +3398,7 @@ function doPost(e) {
           syncConfig: {
             clientOrUrl: '',
             scriptUrl: '',
+            folderPath: DEFAULT_DRIVE_FOLDER_PATH,
             pin: '',
             autoBackup: false,
             autoHourlyLocalSync: true,
@@ -3685,6 +3712,7 @@ function doPost(e) {
         syncConfig: {
           clientOrUrl: '',
           scriptUrl: '',
+          folderPath: DEFAULT_DRIVE_FOLDER_PATH,
           pin: '',
           autoBackup: false,
           autoHourlyLocalSync: true,
@@ -3949,6 +3977,7 @@ function doPost(e) {
           syncConfig: {
             clientOrUrl: String(rawSync.clientOrUrl || rawSync.scriptUrl || ''),
             scriptUrl: String(rawSync.scriptUrl || ''),
+            folderPath: normalizeDriveFolderPath(rawSync.folderPath),
             pin: String(rawSync.pin ?? rawSync.secretPin ?? ''),
             autoBackup: Boolean(rawSync.autoBackup),
             autoHourlyLocalSync: rawSync.autoHourlyLocalSync !== undefined ? Boolean(rawSync.autoHourlyLocalSync) : true,
@@ -6666,6 +6695,15 @@ function doPost(e) {
         if (inputEl && document.activeElement !== inputEl) {
           inputEl.value = target.value;
         }
+        const folderInputEl = document.getElementById('syncFolderPathInput');
+        const resolvedFolderPath = getDriveFolderPath();
+        if (folderInputEl && document.activeElement !== folderInputEl) {
+          folderInputEl.value = resolvedFolderPath;
+        }
+        const guidePathEl = document.getElementById('driveGuidePathCode');
+        if (guidePathEl) {
+          guidePathEl.textContent = `My Drive / ${resolvedFolderPath} / ${BACKUP_FILENAME}`;
+        }
         const autoEl = document.getElementById('syncAutoBackupToggle');
         if (autoEl) autoEl.checked = Boolean(cfg.autoBackup);
         const offHourlyEl = document.getElementById('offlineAutoHourlyToggle');
@@ -7140,9 +7178,9 @@ function doPost(e) {
       };
 
       // --- Online Google Drive (Supports both OAuth Client ID & Apps Script URL) ---
-      const buildScriptGetUrl = (baseUrl, action, pin) => {
+      const buildScriptGetUrl = (baseUrl, action, pin, folderPath = getDriveFolderPath()) => {
         const sep = baseUrl.includes('?') ? '&' : '?';
-        return `${baseUrl}${sep}action=${encodeURIComponent(action)}&pin=${encodeURIComponent(pin || '')}`;
+        return `${baseUrl}${sep}action=${encodeURIComponent(action)}&pin=${encodeURIComponent(pin || '')}&folderPath=${encodeURIComponent(folderPath)}`;
       };
 
       const requestGoogleOAuthToken = (clientId, promptMode = 'consent') => {
@@ -7186,31 +7224,41 @@ function doPost(e) {
       };
 
       const findOrCreateOAuthDriveFolder = async (token) => {
-        const q = encodeURIComponent(
-          `name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and 'root' in parents and trashed=false`
-        );
-        const res = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=drive&q=${q}&fields=files(id,name)&pageSize=5`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error(`Drive folder lookup HTTP ${res.status}`);
-        const json = await res.json();
-        if (json.files && json.files.length > 0) return json.files[0].id;
+        const parts = getDriveFolderPath().split('/').filter(Boolean);
+        let parentId = 'root';
 
-        const createRes = await fetch('https://www.googleapis.com/drive/v3/files?fields=id,name', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: DRIVE_FOLDER_NAME,
-            mimeType: 'application/vnd.google-apps.folder',
-            parents: ['root'],
-          }),
-        });
-        if (!createRes.ok) throw new Error(`Drive folder create HTTP ${createRes.status}`);
-        const created = await createRes.json();
-        return created.id;
+        for (const folderName of parts) {
+          const safeName = folderName.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+          const q = encodeURIComponent(
+            `name='${safeName}' and mimeType='application/vnd.google-apps.folder' and '${parentId}' in parents and trashed=false`
+          );
+          const res = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=drive&q=${q}&fields=files(id,name)&pageSize=5`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) throw new Error(`Drive folder lookup HTTP ${res.status}`);
+          const json = await res.json();
+          if (json.files && json.files.length > 0) {
+            parentId = json.files[0].id;
+            continue;
+          }
+
+          const createRes = await fetch('https://www.googleapis.com/drive/v3/files?fields=id,name', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: folderName,
+              mimeType: 'application/vnd.google-apps.folder',
+              parents: [parentId],
+            }),
+          });
+          if (!createRes.ok) throw new Error(`Drive folder create HTTP ${createRes.status}`);
+          const created = await createRes.json();
+          parentId = created.id;
+        }
+        return parentId;
       };
 
       const findOAuthDriveFileId = async (token) => {
@@ -7271,7 +7319,7 @@ function doPost(e) {
 
       const downloadOAuthDriveBackup = async (token) => {
         const existing = await findOAuthDriveFileId(token);
-        if (!existing) throw new Error(`No backup file found in My Drive / ${DRIVE_FOLDER_NAME}`);
+        if (!existing) throw new Error(`No backup file found in My Drive / ${getDriveFolderPath()}`);
         const res = await fetch(`https://www.googleapis.com/drive/v3/files/${existing.id}?alt=media`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -7336,6 +7384,7 @@ function doPost(e) {
               body: JSON.stringify({
                 pin: state.store.syncConfig.pin || '',
                 action: 'backup',
+                folderPath: getDriveFolderPath(),
                 payload,
               }),
             });
@@ -7352,7 +7401,7 @@ function doPost(e) {
           }
           driveSyncError = false;
           saveStore(false);
-          if (!silent) showToast(`Backed up to My Drive / ${DRIVE_FOLDER_NAME}`, 'success');
+          if (!silent) showToast(`Backed up to My Drive / ${getDriveFolderPath()}`, 'success');
         } catch (err) {
           driveSyncError = true;
           if (!silent) showToast(`Backup failed: ${err.message || 'Check internet / connection'}`, 'error');
@@ -8899,6 +8948,15 @@ function doPost(e) {
         document.getElementById('toggleDriveGuideBtn').addEventListener('click', () => {
           document.getElementById('driveSetupGuideBox').classList.toggle('hidden');
         });
+        const folderPathInput = document.getElementById('syncFolderPathInput');
+        if (folderPathInput) {
+          folderPathInput.addEventListener('change', (e) => {
+            state.store.syncConfig.folderPath = normalizeDriveFolderPath(e.target.value);
+            e.target.value = state.store.syncConfig.folderPath;
+            saveStore(false);
+            renderSyncUI();
+          });
+        }
         document.getElementById('connectDriveBtn').addEventListener('click', connectDrive);
         document.getElementById('disconnectDriveBtn').addEventListener('click', disconnectDrive);
         document.getElementById('driveSyncNowBtn').addEventListener('click', syncDriveNow);
