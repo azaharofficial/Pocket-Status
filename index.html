@@ -92,6 +92,7 @@
     #planningEntryModal > div,
     #planningEditModal > div,
     #vaultPassModal > div,
+    #currentAssetModal > div,
     #categoryModal > div {
       padding-bottom: var(--sys-nav-space);
     }
@@ -417,7 +418,9 @@
     #dueFromOthersAccountsList > div:nth-child(odd),
     #dueToOthersAccountsList > div:nth-child(odd),
     #creditAccountsList > div:nth-child(odd),
+    #accountTypeSectionsContainer [data-custom-acc-list] > div:nth-child(odd),
     #categoriesListContainer > div:nth-child(odd),
+    #currentAssetsList > div:nth-child(odd),
     #flowDetailList > div:nth-child(odd) {
       background-color: rgba(255, 255, 255, 0.98) !important;
       border-color: rgba(203, 213, 225, 0.9) !important;
@@ -431,7 +434,9 @@
     #dueFromOthersAccountsList > div:nth-child(even),
     #dueToOthersAccountsList > div:nth-child(even),
     #creditAccountsList > div:nth-child(even),
+    #accountTypeSectionsContainer [data-custom-acc-list] > div:nth-child(even),
     #categoriesListContainer > div:nth-child(even),
+    #currentAssetsList > div:nth-child(even),
     #flowDetailList > div:nth-child(even) {
       background-color: rgba(241, 245, 249, 0.88) !important;
       border-color: rgba(148, 163, 184, 0.45) !important;
@@ -447,14 +452,18 @@
       border-color: rgba(16, 185, 129, 0.28) !important;
     }
     #view-settings > div:nth-child(3) {
+      background: linear-gradient(135deg, rgba(236, 254, 255, 0.92), rgba(255, 255, 255, 0.96)) !important;
+      border-color: rgba(6, 182, 212, 0.30) !important;
+    }
+    #view-settings > div:nth-child(4) {
       background: linear-gradient(135deg, rgba(238, 242, 255, 0.92), rgba(255, 255, 255, 0.96)) !important;
       border-color: rgba(99, 102, 241, 0.28) !important;
     }
-    #view-settings > div:nth-child(4) {
+    #view-settings > div:nth-child(5) {
       background: linear-gradient(135deg, rgba(241, 245, 249, 0.92), rgba(255, 255, 255, 0.96)) !important;
       border-color: rgba(148, 163, 184, 0.42) !important;
     }
-    #view-settings > div:nth-child(5) {
+    #view-settings > div:nth-child(6) {
       background: linear-gradient(135deg, rgba(245, 243, 255, 0.92), rgba(255, 255, 255, 0.96)) !important;
       border-color: rgba(139, 92, 246, 0.28) !important;
     }
@@ -475,7 +484,9 @@
     html.dark #dueFromOthersAccountsList > div:nth-child(odd),
     html.dark #dueToOthersAccountsList > div:nth-child(odd),
     html.dark #creditAccountsList > div:nth-child(odd),
+    html.dark #accountTypeSectionsContainer [data-custom-acc-list] > div:nth-child(odd),
     html.dark #categoriesListContainer > div:nth-child(odd),
+    html.dark #currentAssetsList > div:nth-child(odd),
     html.dark #flowDetailList > div:nth-child(odd) {
       background-color: rgba(17, 24, 39, 0.96) !important;
       border-color: rgba(51, 65, 85, 0.65) !important;
@@ -489,7 +500,9 @@
     html.dark #dueFromOthersAccountsList > div:nth-child(even),
     html.dark #dueToOthersAccountsList > div:nth-child(even),
     html.dark #creditAccountsList > div:nth-child(even),
+    html.dark #accountTypeSectionsContainer [data-custom-acc-list] > div:nth-child(even),
     html.dark #categoriesListContainer > div:nth-child(even),
+    html.dark #currentAssetsList > div:nth-child(even),
     html.dark #flowDetailList > div:nth-child(even) {
       background-color: rgba(30, 41, 59, 0.72) !important;
       border-color: rgba(71, 85, 105, 0.6) !important;
@@ -504,14 +517,18 @@
       border-color: rgba(16, 185, 129, 0.30) !important;
     }
     html.dark #view-settings > div:nth-child(3) {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.13), rgba(17, 24, 39, 0.95)) !important;
+      border-color: rgba(6, 182, 212, 0.32) !important;
+    }
+    html.dark #view-settings > div:nth-child(4) {
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.13), rgba(17, 24, 39, 0.95)) !important;
       border-color: rgba(99, 102, 241, 0.32) !important;
     }
-    html.dark #view-settings > div:nth-child(4) {
+    html.dark #view-settings > div:nth-child(5) {
       background: linear-gradient(135deg, rgba(51, 65, 85, 0.35), rgba(17, 24, 39, 0.95)) !important;
       border-color: rgba(71, 85, 105, 0.55) !important;
     }
-    html.dark #view-settings > div:nth-child(5) {
+    html.dark #view-settings > div:nth-child(6) {
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.13), rgba(17, 24, 39, 0.95)) !important;
       border-color: rgba(139, 92, 246, 0.32) !important;
     }
@@ -532,6 +549,419 @@
     ::-webkit-scrollbar-thumb {
       background: rgba(148, 163, 184, 0.45);
       border-radius: 9999px;
+    }
+
+    /* ===================================================================== */
+    /* GLASS-TRANSPARENT CALENDARS & SELECTION SLABS (COMPACT LIGHT & DARK)  */
+    /* ===================================================================== */
+    .glass-native-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+    }
+
+    .glass-control-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .glass-trigger-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      padding: 0.4rem 0.55rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.64) 0%, rgba(241, 245, 249, 0.42) 100%) !important;
+      backdrop-filter: blur(14px) saturate(155%);
+      -webkit-backdrop-filter: blur(14px) saturate(155%);
+      border: 1px solid rgba(148, 163, 184, 0.36) !important;
+      color: #0f172a !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 1px 3px rgba(15, 23, 42, 0.05);
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.12s ease, box-shadow 0.16s ease;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .glass-trigger-btn:active:not(:disabled) {
+      transform: scale(0.985);
+    }
+
+    .glass-trigger-btn:disabled {
+      opacity: 0.58;
+      cursor: not-allowed;
+    }
+
+    .glass-trigger-btn.glass-accent-emerald:hover:not(:disabled),
+    .glass-trigger-btn.glass-accent-emerald:focus-visible {
+      border-color: rgba(16, 185, 129, 0.65) !important;
+      box-shadow: 0 0 0 2.5px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      outline: none;
+    }
+
+    .glass-trigger-btn.glass-accent-indigo:hover:not(:disabled),
+    .glass-trigger-btn.glass-accent-indigo:focus-visible {
+      border-color: rgba(99, 102, 241, 0.65) !important;
+      box-shadow: 0 0 0 2.5px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      outline: none;
+    }
+
+    .glass-trigger-btn.glass-accent-cyan:hover:not(:disabled),
+    .glass-trigger-btn.glass-accent-cyan:focus-visible {
+      border-color: rgba(6, 182, 212, 0.65) !important;
+      box-shadow: 0 0 0 2.5px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      outline: none;
+    }
+
+    .glass-trigger-btn.glass-accent-violet:hover:not(:disabled),
+    .glass-trigger-btn.glass-accent-violet:focus-visible {
+      border-color: rgba(139, 92, 246, 0.65) !important;
+      box-shadow: 0 0 0 2.5px rgba(139, 92, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      outline: none;
+    }
+
+    html.dark .glass-trigger-btn {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.44) 0%, rgba(15, 23, 42, 0.34) 100%) !important;
+      border-color: rgba(148, 163, 184, 0.24) !important;
+      color: #f8fafc !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 2px 6px rgba(0, 0, 0, 0.24);
+    }
+
+    html.dark .glass-trigger-btn.glass-accent-emerald:hover:not(:disabled),
+    html.dark .glass-trigger-btn.glass-accent-emerald:focus-visible {
+      border-color: rgba(52, 211, 153, 0.62) !important;
+      box-shadow: 0 0 0 2.5px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    html.dark .glass-trigger-btn.glass-accent-indigo:hover:not(:disabled),
+    html.dark .glass-trigger-btn.glass-accent-indigo:focus-visible {
+      border-color: rgba(129, 140, 248, 0.62) !important;
+      box-shadow: 0 0 0 2.5px rgba(99, 102, 241, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    html.dark .glass-trigger-btn.glass-accent-cyan:hover:not(:disabled),
+    html.dark .glass-trigger-btn.glass-accent-cyan:focus-visible {
+      border-color: rgba(34, 211, 238, 0.62) !important;
+      box-shadow: 0 0 0 2.5px rgba(6, 182, 212, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    html.dark .glass-trigger-btn.glass-accent-violet:hover:not(:disabled),
+    html.dark .glass-trigger-btn.glass-accent-violet:focus-visible {
+      border-color: rgba(167, 139, 250, 0.62) !important;
+      box-shadow: 0 0 0 2.5px rgba(139, 92, 246, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-picker-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.85rem;
+      background: rgba(15, 23, 42, 0.26);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      animation: fadeInView 0.14s ease-out;
+    }
+
+    .glass-picker-backdrop.hidden {
+      display: none !important;
+    }
+
+    html.dark .glass-picker-backdrop {
+      background: rgba(2, 6, 23, 0.46);
+    }
+
+    .glass-picker-slab {
+      width: 100%;
+      max-width: 18.5rem;
+      border-radius: 1rem;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.72) 0%, rgba(241, 245, 249, 0.56) 100%) !important;
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.78) !important;
+      box-shadow: 0 20px 44px -12px rgba(15, 23, 42, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+      color: #0f172a;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 76dvh;
+    }
+
+    .glass-picker-slab.glass-slab-wide {
+      max-width: 21rem;
+    }
+
+    html.dark .glass-picker-slab {
+      background: linear-gradient(145deg, rgba(17, 24, 39, 0.70) 0%, rgba(9, 13, 22, 0.58) 100%) !important;
+      border: 1px solid rgba(148, 163, 184, 0.24) !important;
+      box-shadow: 0 20px 44px -12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+      color: #f8fafc;
+    }
+
+    .glass-picker-header {
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.45rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    html.dark .glass-picker-header {
+      border-bottom-color: rgba(148, 163, 184, 0.16);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .glass-icon-btn {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 0.625rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: #475569;
+      transition: background 0.15s ease, transform 0.12s ease, color 0.15s ease;
+    }
+
+    .glass-icon-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.75);
+      color: #0f172a;
+    }
+
+    .glass-icon-btn:active:not(:disabled) {
+      transform: scale(0.93);
+    }
+
+    .glass-icon-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    html.dark .glass-icon-btn {
+      background: rgba(30, 41, 59, 0.45);
+      border-color: rgba(148, 163, 184, 0.22);
+      color: #cbd5e1;
+    }
+
+    html.dark .glass-icon-btn:hover:not(:disabled) {
+      background: rgba(51, 65, 85, 0.65);
+      color: #f8fafc;
+    }
+
+    .glass-picker-option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.42rem 0.6rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.40);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #0f172a;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.1s ease;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .glass-picker-option:hover {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(148, 163, 184, 0.42);
+    }
+
+    .glass-picker-option:active {
+      transform: scale(0.985);
+    }
+
+    html.dark .glass-picker-option {
+      background: rgba(30, 41, 59, 0.36);
+      border-color: rgba(148, 163, 184, 0.16);
+      color: #f1f5f9;
+    }
+
+    html.dark .glass-picker-option:hover {
+      background: rgba(51, 65, 85, 0.52);
+      border-color: rgba(148, 163, 184, 0.32);
+    }
+
+    .glass-picker-option.is-selected-emerald {
+      background: rgba(16, 185, 129, 0.16) !important;
+      border-color: rgba(16, 185, 129, 0.58) !important;
+    }
+    .glass-picker-option.is-selected-indigo {
+      background: rgba(99, 102, 241, 0.16) !important;
+      border-color: rgba(99, 102, 241, 0.58) !important;
+    }
+    .glass-picker-option.is-selected-cyan {
+      background: rgba(6, 182, 212, 0.16) !important;
+      border-color: rgba(6, 182, 212, 0.58) !important;
+    }
+    .glass-picker-option.is-selected-violet {
+      background: rgba(139, 92, 246, 0.16) !important;
+      border-color: rgba(139, 92, 246, 0.58) !important;
+    }
+
+    .glass-cal-cell,
+    .glass-month-cell {
+      border-radius: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      background: rgba(255, 255, 255, 0.34);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      color: #0f172a;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.1s ease, color 0.14s ease;
+      cursor: pointer;
+    }
+
+    .glass-cal-cell {
+      height: 1.95rem;
+      font-size: 0.7rem;
+    }
+
+    .glass-month-cell {
+      height: 2.1rem;
+      font-size: 0.72rem;
+    }
+
+    .glass-cal-cell:hover,
+    .glass-month-cell:hover {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(148, 163, 184, 0.38);
+    }
+
+    .glass-cal-cell:active,
+    .glass-month-cell:active {
+      transform: scale(0.94);
+    }
+
+    html.dark .glass-cal-cell,
+    html.dark .glass-month-cell {
+      background: rgba(30, 41, 59, 0.34);
+      border-color: rgba(148, 163, 184, 0.14);
+      color: #e2e8f0;
+    }
+
+    html.dark .glass-cal-cell:hover,
+    html.dark .glass-month-cell:hover {
+      background: rgba(51, 65, 85, 0.55);
+      border-color: rgba(148, 163, 184, 0.30);
+    }
+
+    .glass-cal-cell.is-outside {
+      opacity: 0.38;
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .glass-cal-cell.is-today-emerald,
+    .glass-month-cell.is-today-emerald {
+      border-color: rgba(16, 185, 129, 0.75) !important;
+      color: #059669 !important;
+    }
+    html.dark .glass-cal-cell.is-today-emerald,
+    html.dark .glass-month-cell.is-today-emerald {
+      color: #34d399 !important;
+    }
+
+    .glass-cal-cell.is-today-cyan,
+    .glass-month-cell.is-today-cyan {
+      border-color: rgba(6, 182, 212, 0.75) !important;
+      color: #0891b2 !important;
+    }
+    html.dark .glass-cal-cell.is-today-cyan,
+    html.dark .glass-month-cell.is-today-cyan {
+      color: #22d3ee !important;
+    }
+
+    .glass-cal-cell.is-selected-emerald,
+    .glass-month-cell.is-selected-emerald {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      border-color: rgba(16, 185, 129, 0.9) !important;
+      color: #ffffff !important;
+      box-shadow: 0 5px 12px -4px rgba(16, 185, 129, 0.45);
+    }
+
+    .glass-cal-cell.is-selected-cyan,
+    .glass-month-cell.is-selected-cyan {
+      background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
+      border-color: rgba(6, 182, 212, 0.9) !important;
+      color: #ffffff !important;
+      box-shadow: 0 5px 12px -4px rgba(6, 182, 212, 0.45);
+    }
+
+    .glass-cal-cell.is-selected-indigo,
+    .glass-month-cell.is-selected-indigo {
+      background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+      border-color: rgba(99, 102, 241, 0.9) !important;
+      color: #ffffff !important;
+      box-shadow: 0 5px 12px -4px rgba(99, 102, 241, 0.45);
+    }
+
+    .glass-header-month-btn {
+      background: transparent;
+      border-radius: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      transition: background 0.15s ease, transform 0.12s ease;
+    }
+    .glass-header-month-btn:hover {
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .glass-header-month-btn:active {
+      transform: scale(0.97);
+    }
+    html.dark .glass-header-month-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-inline-input {
+      background: rgba(255, 255, 255, 0.52);
+      border: 1px solid rgba(148, 163, 184, 0.34);
+      color: #0f172a;
+      border-radius: 0.625rem;
+      padding: 0.35rem 0.55rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 100%;
+      min-width: 0;
+    }
+    .glass-inline-input:focus {
+      outline: none;
+      border-color: rgba(16, 185, 129, 0.65);
+      background: rgba(255, 255, 255, 0.82);
+    }
+    html.dark .glass-inline-input {
+      background: rgba(15, 23, 42, 0.52);
+      border-color: rgba(148, 163, 184, 0.24);
+      color: #f8fafc;
+    }
+    html.dark .glass-inline-input:focus {
+      border-color: rgba(52, 211, 153, 0.65);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    /* Zero Balance Neutral/White Styling for Accounts */
+    .acc-zero-balance {
+      color: #0f172a !important;
+    }
+    html.dark .acc-zero-balance {
+      color: #ffffff !important;
     }
   </style>
 </head>
@@ -575,11 +1005,15 @@
           </svg>
         </button>
 
-        <div class="flex items-center justify-center gap-2 min-w-0 flex-1">
-          <p id="headerMonthLabel" class="text-sm font-extrabold text-slate-900 leading-tight truncate">November 2026</p>
+        <button id="headerMonthPickerBtn" type="button" aria-label="Select Month and Year" class="glass-header-month-btn flex items-center justify-center gap-2 min-w-0 flex-1 cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="17" rx="3" />
+            <path stroke-linecap="round" d="M8 2v4M16 2v4M3 10h18" />
+          </svg>
+          <span id="headerMonthLabel" class="text-sm font-extrabold text-slate-900 leading-tight truncate">November 2026</span>
           <span class="text-slate-300 text-xs">•</span>
-          <p id="headerDaysBadge" class="text-xs font-semibold text-slate-500 leading-tight truncate">30 Days</p>
-        </div>
+          <span id="headerDaysBadge" class="text-xs font-semibold text-slate-500 leading-tight truncate">30 Days</span>
+        </button>
 
         <button id="nextMonthBtn" type="button" aria-label="Next Month" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-white transition active:scale-95 shrink-0">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
@@ -658,7 +1092,7 @@
 
           <label class="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-600 cursor-pointer select-none shrink-0 px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 transition" onclick="event.stopPropagation()">
             <input id="includePrevMonthNw" type="checkbox" class="w-3 h-3 rounded accent-indigo-600 cursor-pointer" />
-            <span>Include prev. month</span>
+            <span>Balance from Last Month</span>
           </label>
         </div>
 
@@ -689,7 +1123,7 @@
       <div id="homeFlowSlab" class="slab-emerald rounded-2xl bg-white border border-slate-200 px-3 py-2 h-[120px] flex flex-col justify-between shadow-sm">
         <div class="flex items-center justify-between gap-2 pb-1 border-b border-slate-100">
           <h2 class="text-xs font-extrabold text-slate-900 truncate">Income &amp; Expense</h2>
-          <span id="homeFlowMonthLabel" class="text-[10px] font-semibold text-slate-500 shrink-0">Nov 2026</span>
+          <span id="homeFlowMonthLabel" class="text-[10px] font-semibold text-slate-500 shrink-0">November 2026</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -747,7 +1181,7 @@
           <div class="flex items-center gap-1.5 shrink-0">
             <label class="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-600 cursor-pointer select-none px-1.5 py-0.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 transition" onclick="event.stopPropagation()">
               <input id="includeEmiCcHome" type="checkbox" checked class="w-3 h-3 rounded accent-indigo-600 cursor-pointer" />
-              <span>EMI bal.</span>
+              <span>Balance EMI Principal</span>
             </label>
             <span class="inline-flex items-center gap-0.5 text-[11px] font-bold text-amber-600 group-hover:text-amber-700 shrink-0">
               <span>View all</span>
@@ -764,7 +1198,7 @@
             <p id="homeCcAvailable" class="text-sm font-extrabold text-amber-600 tabular-nums leading-tight mt-0.5 truncate">₹0</p>
           </div>
           <div class="min-w-0 text-right">
-            <p class="text-[10px] font-medium text-slate-500 truncate">Card Outstanding</p>
+            <p class="text-[10px] font-medium text-slate-500 truncate">Total Outstanding</p>
             <p id="homeCcExpense" class="text-sm font-extrabold text-rose-600 tabular-nums leading-tight mt-0.5 truncate">₹0</p>
           </div>
         </div>
@@ -1079,14 +1513,20 @@
       <div class="flex items-center justify-between gap-2">
         <div class="min-w-0">
           <h2 class="text-base font-extrabold text-slate-900 truncate">Accounts</h2>
-          <p id="accMonthSubtitle" class="text-[11px] text-slate-500 truncate">Tap icon or Edit to customize</p>
+          <p id="accMonthSubtitle" class="text-[11px] text-slate-500 truncate">Tap on icon to edit</p>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <button id="accPageTransferBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs transition active:scale-95">
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="accPageManageTypesBtn" type="button" title="Edit or add account types" class="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs transition active:scale-95">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Types</span>
+          </button>
+          <button id="accPageTransferBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs transition active:scale-95">
             <span>Transfer</span>
           </button>
-          <button id="accPageAddBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-sm transition active:scale-95">
-            <span>+ Add Account</span>
+          <button id="accPageAddBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-sm transition active:scale-95">
+            <span>+ Add</span>
           </button>
         </div>
       </div>
@@ -1094,69 +1534,71 @@
       <!-- Summary Strip -->
       <div class="grid grid-cols-2 gap-3">
         <div class="min-w-0 rounded-2xl bg-white border border-emerald-200 p-3.5 shadow-sm">
-          <p class="text-xs font-medium text-slate-500 truncate">Total Asset Balance</p>
+          <p class="text-xs font-medium text-slate-500 truncate">Total Asset</p>
           <p id="accTotalSavings" class="text-lg font-extrabold text-emerald-600 tabular-nums mt-1 truncate">₹0</p>
         </div>
-        <div class="min-w-0 rounded-2xl bg-white border border-amber-200 p-3.5 shadow-sm">
-          <p class="text-xs font-medium text-slate-500 truncate">Credit Card Used</p>
-          <p id="accTotalCcUsed" class="text-lg font-extrabold text-amber-600 tabular-nums mt-1 truncate">₹0</p>
+        <div class="min-w-0 rounded-2xl bg-white border border-rose-200 p-3.5 shadow-sm">
+          <p class="text-xs font-medium text-slate-500 truncate">Total Liability</p>
+          <p id="accTotalLiability" class="text-lg font-extrabold text-rose-600 tabular-nums mt-1 truncate">₹0</p>
         </div>
       </div>
 
-      <!-- Saving Accounts -->
-      <div class="space-y-2.5">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-700">Saving Accounts</h3>
-          <span id="savingsCountLabel" class="text-xs text-slate-500">0 accounts</span>
+      <div id="accountTypeSectionsContainer" class="space-y-4">
+        <!-- Saving Accounts -->
+        <div data-acc-type-section="saving" class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 id="accTypeHeading-saving" class="text-xs font-bold uppercase tracking-wider text-emerald-700">Saving Accounts</h3>
+            <span id="savingsCountLabel" class="text-xs text-slate-500">0 accounts</span>
+          </div>
+          <div id="savingsAccountsList" class="space-y-2.5"></div>
         </div>
-        <div id="savingsAccountsList" class="space-y-2.5"></div>
-      </div>
 
-      <!-- Wallet -->
-      <div class="space-y-2.5 pt-1">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-700">Wallet</h3>
-          <span id="walletCountLabel" class="text-xs text-slate-500">0 wallets</span>
+        <!-- Wallet -->
+        <div data-acc-type-section="wallet" class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 id="accTypeHeading-wallet" class="text-xs font-bold uppercase tracking-wider text-cyan-700">Wallet</h3>
+            <span id="walletCountLabel" class="text-xs text-slate-500">0 wallets</span>
+          </div>
+          <div id="walletAccountsList" class="space-y-2.5"></div>
         </div>
-        <div id="walletAccountsList" class="space-y-2.5"></div>
-      </div>
 
-      <!-- Cashback -->
-      <div class="space-y-2.5 pt-1">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-violet-700">Cashback</h3>
-          <span id="cashbackCountLabel" class="text-xs text-slate-500">0 accounts</span>
+        <!-- Cashback -->
+        <div data-acc-type-section="cashback" class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 id="accTypeHeading-cashback" class="text-xs font-bold uppercase tracking-wider text-violet-700">Cashback</h3>
+            <span id="cashbackCountLabel" class="text-xs text-slate-500">0 accounts</span>
+          </div>
+          <div id="cashbackAccountsList" class="space-y-2.5"></div>
         </div>
-        <div id="cashbackAccountsList" class="space-y-2.5"></div>
-      </div>
 
-      <!-- Due From Others -->
-      <div class="space-y-2.5 pt-1">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-orange-600">Due From Others</h3>
-          <span id="dueFromOthersCountLabel" class="text-xs text-slate-500">0 accounts</span>
+        <!-- Due From Others -->
+        <div data-acc-type-section="due_from_others" class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 id="accTypeHeading-due_from_others" class="text-xs font-bold uppercase tracking-wider text-orange-600">Due From Others</h3>
+            <span id="dueFromOthersCountLabel" class="text-xs text-slate-500">0 accounts</span>
+          </div>
+          <div id="dueFromOthersAccountsList" class="space-y-2.5"></div>
         </div>
-        <div id="dueFromOthersAccountsList" class="space-y-2.5"></div>
-      </div>
 
-      <!-- Due To Others -->
-      <div class="space-y-2.5 pt-1">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-rose-600">Due To Others</h3>
-          <span id="dueToOthersCountLabel" class="text-xs text-slate-500">0 accounts</span>
+        <!-- Due To Others -->
+        <div data-acc-type-section="due_to_others" class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 id="accTypeHeading-due_to_others" class="text-xs font-bold uppercase tracking-wider text-rose-600">Due To Others</h3>
+            <span id="dueToOthersCountLabel" class="text-xs text-slate-500">0 accounts</span>
+          </div>
+          <div id="dueToOthersAccountsList" class="space-y-2.5"></div>
         </div>
-        <div id="dueToOthersAccountsList" class="space-y-2.5"></div>
-      </div>
 
-      <!-- Credit Cards -->
-      <div class="space-y-2.5 pt-1">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700">Credit Cards</h3>
-          <button id="accOpenCcDetailBtn" type="button" class="text-xs font-bold text-amber-600 hover:text-amber-700 transition">
-            Billing &amp; Details ›
-          </button>
+        <!-- Credit Cards -->
+        <div data-acc-type-section="credit_card" class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 id="accTypeHeading-credit_card" class="text-xs font-bold uppercase tracking-wider text-amber-700">Credit Cards</h3>
+            <button id="accOpenCcDetailBtn" type="button" class="text-xs font-bold text-amber-600 hover:text-amber-700 transition">
+              Billing &amp; Details ›
+            </button>
+          </div>
+          <div id="creditAccountsList" class="space-y-2.5"></div>
         </div>
-        <div id="creditAccountsList" class="space-y-2.5"></div>
       </div>
     </section>
 
@@ -1238,18 +1680,26 @@
     <!-- =================================================================== -->
     <!-- VIEW 3: CATEGORIES TAB (UNIFIED FOR INCOME & EXPENSE)               -->
     <!-- =================================================================== -->
-    <section id="view-categories" class="page-view hidden space-y-4">
+    <section id="view-categories" class="page-view hidden space-y-3">
       <div class="flex items-center justify-between gap-2">
         <div class="min-w-0">
           <h2 class="text-base font-extrabold text-slate-900 truncate">Categories</h2>
-          <p class="text-[11px] text-slate-500 truncate">Unified for Income &amp; Expense • Tap icon to recolour</p>
+          <p class="text-[11px] text-slate-500 truncate">Tap on icon to edit</p>
         </div>
         <button id="catPageAddBtn" type="button" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-sm transition active:scale-95">
           <span>+ Add Category</span>
         </button>
       </div>
 
-      <div id="categoriesListContainer" class="space-y-2.5">
+      <!-- Column Header Strip (Icon, Name, Income, Expense) -->
+      <div class="px-3 py-1 flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+        <span class="w-9 shrink-0 text-center">Icon</span>
+        <span class="flex-1 min-w-0">Name</span>
+        <span class="w-[78px] shrink-0 text-right text-emerald-600">Income</span>
+        <span class="w-[78px] shrink-0 text-right text-rose-600">Expense</span>
+      </div>
+
+      <div id="categoriesListContainer" class="space-y-2">
         <!-- Populated dynamically -->
       </div>
     </section>
@@ -1299,7 +1749,7 @@
     <section id="view-settings" class="page-view hidden space-y-4">
 
       <!-- 1. APPEARANCE (APP THEME: LIGHT / DARK / SYSTEM DEFAULT) -->
-      <div class="rounded-2xl bg-white border border-slate-200 p-4 space-y-3 shadow-sm">
+      <div class="rounded-2xl bg-white border border-slate-200 p-4 space-y-3 shadow-sm min-h-[116px] flex flex-col justify-between">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2.5 min-w-0">
             <span class="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
@@ -1307,28 +1757,25 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-10h-1M4.34 12h-1m15.07 6.07l-.7-.7M6.34 6.34l-.7-.7m12.02 0l-.7.7M6.34 17.66l-.7.7M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </span>
-            <div class="min-w-0">
-              <h2 class="text-sm font-extrabold text-slate-900 truncate">App Theme</h2>
-              <p id="themeStatusLabel" class="text-[11px] text-slate-500 truncate">System default</p>
-            </div>
+            <h2 class="text-sm font-extrabold text-slate-900 truncate">App Theme</h2>
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200">
-          <button type="button" data-theme-choice="light" class="theme-choice-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
+        <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200 h-[40px] items-center">
+          <button type="button" data-theme-choice="light" class="theme-choice-btn h-full px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="4" />
               <path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
             </svg>
             <span>Light</span>
           </button>
-          <button type="button" data-theme-choice="dark" class="theme-choice-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <button type="button" data-theme-choice="dark" class="theme-choice-btn h-full px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
             </svg>
             <span>Dark</span>
           </button>
-          <button type="button" data-theme-choice="system" class="theme-choice-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <button type="button" data-theme-choice="system" class="theme-choice-btn h-full px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <rect x="2" y="3" width="20" height="14" rx="2" />
               <path stroke-linecap="round" d="M8 21h8m-4-4v4" />
@@ -1338,9 +1785,9 @@
         </div>
       </div>
 
-      <!-- 2. APP LOCK (4-DIGIT PIN SECURITY) -->
-      <div class="rounded-2xl bg-white border border-slate-200 p-4 space-y-3 shadow-sm">
-        <div class="flex items-start justify-between gap-2">
+      <!-- 2. APP LOCK -->
+      <div class="rounded-2xl bg-white border border-slate-200 p-4 space-y-3 shadow-sm min-h-[116px] flex flex-col justify-between">
+        <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2.5 min-w-0">
             <span class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
@@ -1348,10 +1795,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0v4" />
               </svg>
             </span>
-            <div class="min-w-0">
-              <h2 class="text-sm font-extrabold text-slate-900 truncate">App Lock (4-Digit PIN)</h2>
-              <p id="pinLockDesc" class="text-[11px] text-slate-500 truncate">Require a 4-digit PIN each time you open the app</p>
-            </div>
+            <h2 class="text-sm font-extrabold text-slate-900 truncate">App Lock</h2>
           </div>
           <span id="pinStatusBadge" class="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
             Off
@@ -1359,22 +1803,50 @@
         </div>
 
         <div id="pinOffControls">
-          <button id="enablePinBtn" type="button" class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition active:scale-95">
+          <button id="enablePinBtn" type="button" class="w-full h-[40px] px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition active:scale-95">
             Set 4-Digit PIN Lock
           </button>
         </div>
 
         <div id="pinOnControls" class="hidden grid grid-cols-3 gap-2">
-          <button id="changePinBtn" type="button" class="py-2.5 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-bold text-[11px] transition active:scale-95">
+          <button id="changePinBtn" type="button" class="h-[40px] px-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-bold text-[11px] transition active:scale-95">
             Change PIN
           </button>
-          <button id="lockNowBtn" type="button" class="py-2.5 px-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-[11px] transition active:scale-95">
+          <button id="lockNowBtn" type="button" class="h-[40px] px-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-[11px] transition active:scale-95">
             Lock Now
           </button>
-          <button id="disablePinBtn" type="button" class="py-2.5 px-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-[11px] transition active:scale-95">
+          <button id="disablePinBtn" type="button" class="h-[40px] px-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-[11px] transition active:scale-95">
             Turn Off
           </button>
         </div>
+      </div>
+
+      <!-- 3. CURRENT ASSET (INDEPENDENT PIN-PROTECTED VAULT PAGE) -->
+      <div id="settingsCurrentAssetSlab" class="rounded-2xl bg-white border border-slate-200 p-4 space-y-3 shadow-sm min-h-[116px] flex flex-col justify-between">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-9 h-9 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-600 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M4 10V8l8-4 8 4v2M5 10v8m4-8v8m6-8v8m4-8v8M3 18h18" />
+              </svg>
+            </span>
+            <h2 class="text-sm font-extrabold text-slate-900 truncate">Current Asset</h2>
+          </div>
+          <button id="changeCaPinBtn" type="button" class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 transition active:scale-95">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0v4" />
+            </svg>
+            <span id="changeCaPinLabel">Set PIN</span>
+          </button>
+        </div>
+
+        <button id="openCurrentAssetBtn" type="button" class="w-full h-[40px] px-3 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5">
+          <span>Open Current Asset</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       <!-- 3. OFFLINE BACKUP & LOCAL SYNC SLAB -->
@@ -1548,6 +2020,43 @@
 
     </section>
 
+
+    <!-- =================================================================== -->
+    <!-- PIN-PROTECTED SUB-VIEW: CURRENT ASSET                               -->
+    <!-- =================================================================== -->
+    <section id="view-current-assets" class="page-view hidden space-y-4">
+      <div class="flex items-center justify-between gap-2">
+        <div class="min-w-0">
+          <h2 class="text-base font-extrabold text-slate-900 truncate">Current Asset</h2>
+          <p class="text-[11px] text-slate-500 truncate">Tap on icon to edit</p>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="caAddAccountBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-xs shadow-sm transition active:scale-95">
+            <span>+ Add Account</span>
+          </button>
+          <button id="caClosePageBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs transition active:scale-95" aria-label="Close Current Asset">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span>Close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Total Current Asset Summary Card -->
+      <div class="rounded-2xl bg-white border border-cyan-200 p-4 shadow-sm flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-xs font-medium text-slate-500 truncate">Total Current Asset</p>
+          <p id="caTotalBalance" class="text-xl font-extrabold text-cyan-600 tabular-nums mt-1 truncate">₹0</p>
+        </div>
+        <span id="caTotalCount" class="shrink-0 px-2.5 py-1 rounded-xl bg-cyan-50 border border-cyan-200 text-[11px] font-bold text-cyan-700">0 accounts</span>
+      </div>
+
+      <div id="currentAssetsList" class="space-y-2.5">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
   </main>
 
   <!-- ===================================================================== -->
@@ -1711,13 +2220,20 @@
   <!-- ===================================================================== -->
   <div id="accountModal" class="hidden fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
     <div class="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-white border-t sm:border border-slate-200 shadow-2xl max-h-[92vh] max-h-[92dvh] flex flex-col overflow-hidden">
-      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
-        <h2 id="accountModalTitle" class="text-base font-extrabold text-slate-900">Add Account</h2>
-        <button id="closeAccountModalBtn" type="button" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition" aria-label="Close">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-2 shrink-0">
+        <h2 id="accountModalTitle" class="text-base font-extrabold text-slate-900 truncate">Add Account</h2>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="deleteAccFromModalBtn" type="button" class="hidden w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 hover:text-rose-700 flex items-center justify-center transition active:scale-95" aria-label="Delete Account" title="Delete Account">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12zm-8 5v6m4-6v6" />
+            </svg>
+          </button>
+          <button id="closeAccountModalBtn" type="button" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition" aria-label="Close">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <form id="accountForm" class="p-5 space-y-4 overflow-y-auto">
@@ -1974,17 +2490,82 @@
   </div>
 
   <!-- ===================================================================== -->
+  <!-- MODAL: ADD / EDIT CURRENT ASSET ACCOUNT (z-[60])                      -->
+  <!-- ===================================================================== -->
+  <div id="currentAssetModal" class="hidden fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-white border-t sm:border border-slate-200 shadow-2xl max-h-[92vh] max-h-[92dvh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-2 shrink-0">
+        <h2 id="caModalTitle" class="text-base font-extrabold text-slate-900 truncate">Add Current Asset Account</h2>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="deleteCaFromModalBtn" type="button" class="hidden w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 hover:text-rose-700 flex items-center justify-center transition active:scale-95" aria-label="Delete Account" title="Delete Account">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12zm-8 5v6m4-6v6" />
+            </svg>
+          </button>
+          <button id="closeCaModalBtn" type="button" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition" aria-label="Close">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <form id="currentAssetForm" class="p-5 space-y-4 overflow-y-auto">
+        <input type="hidden" id="caEditId" value="" />
+        <input type="hidden" id="caIconColor" value="#06b6d4" />
+
+        <div>
+          <label for="caNameInput" class="block text-xs font-semibold text-slate-600 mb-1.5">Account Name</label>
+          <input id="caNameInput" type="text" required maxlength="45" placeholder="e.g. Fixed Deposit, Mutual Funds, Gold, PPF" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white" />
+        </div>
+
+        <div>
+          <label for="caBalanceInput" class="block text-xs font-semibold text-slate-600 mb-1.5">Current Value / Balance (₹)</label>
+          <input id="caBalanceInput" type="number" step="any" required value="0" class="w-full px-3.5 py-2.5 text-base font-extrabold tabular-nums bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-cyan-500 focus:bg-white" />
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-700">Icon Colour</span>
+            <span id="caColorHexLabel" class="text-[11px] font-mono text-slate-500 uppercase">#06B6D4</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div id="caIconPreview" class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-all"></div>
+            <div id="caColorSwatches" class="flex flex-wrap items-center gap-2 flex-1"></div>
+          </div>
+        </div>
+
+        <div>
+          <label for="caNoteInput" class="block text-xs font-semibold text-slate-600 mb-1.5">Note / Institution <span class="text-slate-400 font-normal">(Optional)</span></label>
+          <input id="caNoteInput" type="text" maxlength="80" placeholder="e.g. SBI FD, Zerodha, Sovereign Gold" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white" />
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-sm shadow-sm transition active:scale-[0.99]">
+          Save Account
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
   <!-- MODAL 3: ADD / EDIT CATEGORY (z-[60])                                 -->
   <!-- ===================================================================== -->
   <div id="categoryModal" class="hidden fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
     <div class="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-white border-t sm:border border-slate-200 shadow-2xl max-h-[92vh] max-h-[92dvh] flex flex-col overflow-hidden">
-      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
-        <h2 id="catModalTitle" class="text-base font-extrabold text-slate-900">Add Category</h2>
-        <button id="closeCatModalBtn" type="button" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition" aria-label="Close">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-2 shrink-0">
+        <h2 id="catModalTitle" class="text-base font-extrabold text-slate-900 truncate">Add Category</h2>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="deleteCatFromModalBtn" type="button" class="hidden w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 hover:text-rose-700 flex items-center justify-center transition active:scale-95" aria-label="Delete Category" title="Delete Category">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12zm-8 5v6m4-6v6" />
+            </svg>
+          </button>
+          <button id="closeCatModalBtn" type="button" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition" aria-label="Close">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <form id="categoryForm" class="p-5 space-y-4 overflow-y-auto">
@@ -2013,7 +2594,7 @@
             <span class="text-xs font-semibold text-slate-700">Select Icon</span>
             <span id="catIconNameLabel" class="text-[11px] font-semibold text-slate-500">Tag</span>
           </div>
-          <div id="catIconGrid" class="grid grid-cols-6 gap-1.5 max-h-40 overflow-y-auto pr-1"></div>
+          <div id="catIconGrid" class="grid grid-cols-6 gap-1.5 max-h-56 overflow-y-auto pr-1"></div>
         </div>
 
         <button id="catSubmitBtn" type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-sm transition active:scale-[0.99]">
@@ -2055,6 +2636,149 @@
       <div class="flex justify-end gap-2">
         <button id="confirmCancelBtn" type="button" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">Cancel</button>
         <button id="confirmOkBtn" type="button" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <!-- GLASS-TRANSPARENT SELECTION SLAB OVERLAY (Account / Category) z-[80]  -->
+  <!-- ===================================================================== -->
+  <div id="glassSelectOverlay" class="hidden glass-picker-backdrop" role="dialog" aria-modal="true" aria-labelledby="glassSelectTitle">
+    <div class="glass-picker-slab">
+      <div class="glass-picker-header">
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="glassSelectHeaderIcon" class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border"></span>
+          <h3 id="glassSelectTitle" class="text-xs font-extrabold truncate">Select Option</h3>
+        </div>
+        <button id="glassSelectCloseBtn" type="button" class="glass-icon-btn shrink-0" aria-label="Close">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="glassSelectList" class="p-2.5 space-y-1 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- GLASS-TRANSPARENT CALENDAR SLAB OVERLAY (Date & Month Pickers) z-[80] -->
+  <!-- ===================================================================== -->
+  <div id="glassCalendarOverlay" class="hidden glass-picker-backdrop" role="dialog" aria-modal="true" aria-labelledby="glassCalTitle">
+    <div class="glass-picker-slab">
+      <div class="glass-picker-header">
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="glassCalHeaderIcon" class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="17" rx="3" />
+              <path stroke-linecap="round" d="M8 2v4M16 2v4M3 10h18" />
+            </svg>
+          </span>
+          <h3 id="glassCalTitle" class="text-xs font-extrabold truncate">Select Date</h3>
+        </div>
+        <button id="glassCalCloseBtn" type="button" class="glass-icon-btn shrink-0" aria-label="Close">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-2.5 space-y-2.5">
+        <!-- Month / Year Navigation Row -->
+        <div class="flex items-center justify-between gap-1.5">
+          <button id="glassCalPrevBtn" type="button" class="glass-icon-btn shrink-0" aria-label="Previous">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <button id="glassCalModeToggleBtn" type="button" class="flex-1 py-1 px-2.5 rounded-lg text-xs font-extrabold text-center transition hover:bg-white/40 dark:hover:bg-white/10 active:scale-95 flex items-center justify-center gap-1">
+            <span id="glassCalNavLabel">November 2026</span>
+            <svg class="w-3 h-3 opacity-60" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <button id="glassCalNextBtn" type="button" class="glass-icon-btn shrink-0" aria-label="Next">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Day Picker Grid -->
+        <div id="glassCalDayView" class="space-y-1.5">
+          <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase tracking-wider opacity-60">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+          </div>
+          <div id="glassCalDaysGrid" class="grid grid-cols-7 gap-1"></div>
+        </div>
+
+        <!-- Month Picker Grid -->
+        <div id="glassCalMonthView" class="hidden grid grid-cols-3 gap-1.5"></div>
+
+        <!-- Footer Quick Actions -->
+        <div class="pt-2 border-t border-slate-400/20 flex items-center justify-between gap-2">
+          <button id="glassCalTodayBtn" type="button" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition active:scale-95 border">
+            Today
+          </button>
+          <button id="glassCalDoneBtn" type="button" class="px-3 py-1 rounded-lg text-[11px] font-bold glass-picker-option !w-auto !py-1 !px-3">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- GLASS-TRANSPARENT ACCOUNT TYPES EDITOR & ADD NEW SLAB z-[80]          -->
+  <!-- ===================================================================== -->
+  <div id="accountTypesModal" class="hidden glass-picker-backdrop" role="dialog" aria-modal="true" aria-labelledby="accountTypesTitle">
+    <div class="glass-picker-slab glass-slab-wide">
+      <div class="glass-picker-header">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border" style="background-color: #10b9811a; border-color: #10b98155; color: #10b981;">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h14" />
+            </svg>
+          </span>
+          <h3 id="accountTypesTitle" class="text-xs font-extrabold truncate">Edit Account Types</h3>
+        </div>
+        <button id="closeAccountTypesBtn" type="button" class="glass-icon-btn shrink-0" aria-label="Close">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Add New Account Type Bar -->
+      <div class="px-2.5 pt-2.5 pb-2 border-b border-slate-400/20 space-y-2">
+        <p class="text-[10px] font-bold uppercase tracking-wider opacity-70">Add New Account Type</p>
+        <div class="flex items-center gap-1.5">
+          <input id="newAccTypeNameInput" type="text" maxlength="32" placeholder="e.g. Investments, Cash, Loan" class="glass-inline-input flex-1" />
+          <button id="addNewAccTypeBtn" type="button" class="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-extrabold shadow-sm transition active:scale-95">
+            + Add
+          </button>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button type="button" data-new-type-kind="asset" class="new-acc-type-kind-btn py-1 px-2 rounded-lg text-[11px] font-bold border transition bg-emerald-600 text-white border-emerald-600">
+            Asset (+ Net Worth)
+          </button>
+          <button type="button" data-new-type-kind="liability" class="new-acc-type-kind-btn py-1 px-2 rounded-lg text-[11px] font-bold border transition glass-picker-option !justify-center !py-1">
+            Liability (− Net Worth)
+          </button>
+        </div>
+      </div>
+
+      <div id="accountTypesEditorList" class="p-2.5 space-y-1.5 overflow-y-auto"></div>
+
+      <div class="px-3 py-2.5 border-t border-slate-400/20 flex items-center justify-between gap-2">
+        <button id="resetAccountTypesBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold glass-picker-option !w-auto !py-1.5 !px-2.5">
+          Reset Labels
+        </button>
+        <button id="saveAccountTypesBtn" type="button" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm transition active:scale-95">
+          Save Changes
+        </button>
       </div>
     </div>
   </div>
@@ -2301,9 +3025,58 @@ function doPost(e) {
       };
 
       const ASSET_ACCOUNT_TYPES = ['saving', 'wallet', 'cashback', 'due_from_others'];
+      const DEFAULT_ACCOUNT_TYPE_ORDER = ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'];
+      const getCustomAccountTypes = () =>
+        typeof state !== 'undefined' && state.store && Array.isArray(state.store.customAccountTypes)
+          ? state.store.customAccountTypes
+          : [];
+      const getCustomAccountTypeByKey = (type) => getCustomAccountTypes().find((t) => t.key === type) || null;
+      const isValidAccountType = (type) => Boolean(ACCOUNT_TYPES[type] || getCustomAccountTypeByKey(type));
       const isCreditCardType = (type) => type === 'credit_card';
-      const isLiabilityType = (type) => type === 'credit_card' || type === 'due_to_others';
-      const getAccountTypeMeta = (type) => ACCOUNT_TYPES[type] || ACCOUNT_TYPES.saving;
+      const isLiabilityType = (type) => {
+        if (type === 'credit_card' || type === 'due_to_others') return true;
+        const custom = getCustomAccountTypeByKey(type);
+        return Boolean(custom && custom.kind === 'liability');
+      };
+      const isNonCardLiabilityType = (type) => isLiabilityType(type) && !isCreditCardType(type);
+      const getAllAccountTypeKeys = () => [
+        ...DEFAULT_ACCOUNT_TYPE_ORDER,
+        ...getCustomAccountTypes().map((t) => t.key),
+      ];
+      const getAccountTypeOrder = () => {
+        const allKeys = getAllAccountTypeKeys();
+        const saved = typeof state !== 'undefined' && state.store && Array.isArray(state.store.accountTypeOrder)
+          ? state.store.accountTypeOrder
+          : allKeys;
+        const valid = saved.filter((k) => allKeys.includes(k));
+        allKeys.forEach((k) => { if (!valid.includes(k)) valid.push(k); });
+        return valid;
+      };
+      const getAccountTypeMeta = (type) => {
+        const custom = getCustomAccountTypeByKey(type);
+        if (custom) {
+          const lbl = String(custom.label || 'Custom Type').trim() || 'Custom Type';
+          return {
+            label: lbl,
+            shortLabel: lbl,
+            defaultColor: normalizeHex(custom.color, custom.kind === 'liability' ? '#f43f5e' : '#0ea5e9'),
+            listId: `customAccountsList-${custom.key}`,
+            countId: `customCountLabel-${custom.key}`,
+            unit: 'account',
+            emptyText: `No ${lbl} accounts yet. Tap "+ Add" and choose ${lbl}.`,
+            isCustom: true,
+            kind: custom.kind === 'liability' ? 'liability' : 'asset',
+          };
+        }
+        const base = ACCOUNT_TYPES[type] || ACCOUNT_TYPES.saving;
+        const customLabel = typeof state !== 'undefined' && state.store && state.store.accountTypeLabels
+          ? String(state.store.accountTypeLabels[type] || '').trim()
+          : '';
+        if (customLabel) {
+          return { ...base, label: customLabel, shortLabel: customLabel, isCustom: false };
+        }
+        return { ...base, isCustom: false };
+      };
 
       const getAccountSvg = (type, sizeClass = 'w-4 h-4') => {
         if (type === 'credit_card') {
@@ -2331,6 +3104,16 @@ function doPost(e) {
         if (type === 'due_to_others') {
           return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16 11a4 4 0 10-8 0 4 4 0 008 0zM4 20a6 6 0 0112 0M16 11h6" />
+          </svg>`;
+        }
+        if (type !== 'saving') {
+          if (isLiabilityType(type)) {
+            return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>`;
+          }
+          return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
           </svg>`;
         }
         return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -2381,6 +3164,54 @@ function doPost(e) {
         { key: 'shield', label: 'Insurance', d: 'M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3z' },
         { key: 'receipt', label: 'Bills & Invoices', d: 'M6 3h12v18l-3-2-3 2-3-2-3 2V3zm3 5h6M9 12h6M9 16h4' },
         { key: 'card', label: 'EMI & Card', d: 'M2 7a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7zm0 3h20M6 15h4' },
+        { key: 'pizza', label: 'Fast Food & Pizza', d: 'M12 3L3 20l17-9L12 3zm0 0c2 4 4 6 8 8M9.5 14.5h.01M13 12h.01M10 10.5h.01' },
+        { key: 'cake', label: 'Bakery & Sweets', d: 'M4 13h16v7H4v-7zm2-4h12v4H6V9zm6-5v2M8 5v2m8-2v2M4 16c1.5 1 3 1 4 0s2.5-1 4 0 3 1 4 0 2.5-1 4 0' },
+        { key: 'wine', label: 'Drinks & Party', d: 'M8 3h8l-1 6a3 3 0 01-6 0L8 3zm4 9v8m-4 0h8' },
+        { key: 'apple', label: 'Fruits & Veg', d: 'M12 7c2-2 5-1.5 6 1 1 3-1 9-4 11-1 .7-2 0-2 0s-1 .7-2 0C7 17 5 11 6 8c1-2.5 4-3 6-1zm0 0c0-2 1-3.5 3-4' },
+        { key: 'bike', label: 'Bike & Scooter', d: 'M5 17a3 3 0 106 0 3 3 0 00-6 0zm10 0a3 3 0 106 0 3 3 0 00-6 0zM8 17l3-7h4l3 7M11 10l-1-3H8m7 3l1-3h2' },
+        { key: 'parking', label: 'Parking & Toll', d: 'M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zm6 13V7h3.5a2.5 2.5 0 010 5H10' },
+        { key: 'ship', label: 'Ferry & Cruise', d: 'M3 17l2 3h14l2-3-9-4-9 4zm3-2V9h12v6M9 9V6h6v3' },
+        { key: 'map', label: 'Trips & Tours', d: 'M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2V6zm6-2v14m6-12v14' },
+        { key: 'sofa', label: 'Furniture & Decor', d: 'M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3m-16 0a2 2 0 00-2 2v3h20v-3a2 2 0 00-2-2m-16 0h16M5 16v3m14-3v3' },
+        { key: 'cleaning', label: 'Cleaning & Maid', d: 'M12 3v9m-5 0h10l1.5 8h-13L7 12zm2-9h6' },
+        { key: 'laundry', label: 'Laundry & Dryclean', d: 'M5 3h14a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm0 4h14M12 10a4 4 0 100 8 4 4 0 000-8z' },
+        { key: 'garden', label: 'Garden & Plants', d: 'M12 21v-9m0 0c0-4 3-7 7-7 0 4-3 7-7 7zm0 0c0-3.5-2.5-6-6-6 0 3.5 2.5 6 6 6z' },
+        { key: 'key', label: 'Rent & Society', d: 'M15 7a4 4 0 11-7.5 2H3v3h2v2h3v-2h.5A4 4 0 0115 7zm0 0h.01' },
+        { key: 'tv', label: 'TV & Cable', d: 'M3 7h18v11H3V7zm5 14h8M9 3l3 4 3-4' },
+        { key: 'cloud', label: 'Cloud & Software', d: 'M7 18h10a4 4 0 00.5-7.97A5.5 5.5 0 006.7 8.5 4.5 4.5 0 007 18z' },
+        { key: 'camera', label: 'Camera & Photo', d: 'M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1zm8 3a3.5 3.5 0 100 7 3.5 3.5 0 000-7z' },
+        { key: 'headphones', label: 'Audio & Gadgets', d: 'M4 15v-3a8 8 0 0116 0v3m-16 0a2 2 0 002 2h1v-5H6a2 2 0 00-2 2zm16 0a2 2 0 01-2 2h-1v-5h1a2 2 0 012 2z' },
+        { key: 'printer', label: 'Office & Print', d: 'M6 9V4h12v5M6 17H4a1 1 0 01-1-1v-5a2 2 0 012-2h14a2 2 0 012 2v5a1 1 0 01-1 1h-2M6 14h12v6H6v-6z' },
+        { key: 'sim', label: 'SIM & Broadband', d: 'M6 3h8l4 4v14H6V3zm3 9h6v6H9v-6zm3 0v6m-3-3h6' },
+        { key: 'salon', label: 'Salon & Grooming', d: 'M6 7a2.5 2.5 0 100 5 2.5 2.5 0 000-5zm0 10a2.5 2.5 0 100-5 2.5 2.5 0 000 5zm2.2-7.5L19 5M8.2 14.5L19 19' },
+        { key: 'spa', label: 'Wellness & Spa', d: 'M12 4c2 3 2 6 0 9-2-3-2-6 0-9zm0 9c3.5-2 6.5-1 8 2-3.5 2-6.5 1-8-2zm0 0c-3.5-2-6.5-1-8 2 3.5 2 6.5 1 8-2zm-5 7h10' },
+        { key: 'stethoscope', label: 'Doctor & Clinic', d: 'M5 4v5a4 4 0 008 0V4M9 13v3a4 4 0 008 0v-2m0-2a2 2 0 100 4 2 2 0 000-4z' },
+        { key: 'watch', label: 'Watch & Fashion', d: 'M12 7a5 5 0 100 10 5 5 0 000-10zm-3-4h6l1 4H8l1-4zm0 18h6l1-4H8l1 4zm3-11v2l1.5 1' },
+        { key: 'jewelry', label: 'Gold & Jewelry', d: 'M6 4h12l4 5-10 11L2 9l4-5zm-4 5h20M9 4l-1 5 4 11 4-11-1-5' },
+        { key: 'shoe', label: 'Footwear', d: 'M4 15v2a2 2 0 002 2h13a2 2 0 002-2v-1l-5-2-3-4H9l-1 3H4v2z' },
+        { key: 'glasses', label: 'Eyewear & Optics', d: 'M3 13a3.5 3.5 0 107 0 3.5 3.5 0 00-7 0zm11 0a3.5 3.5 0 107 0 3.5 3.5 0 00-7 0zm-4 0h4' },
+        { key: 'luggage', label: 'Luggage & Bags', d: 'M6 8h12a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2v-9a2 2 0 012-2zm3 0V5a1 1 0 011-1h4a1 1 0 011 1v3m-6 4v5m6-5v5' },
+        { key: 'package', label: 'Delivery & Courier', d: 'M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zm0 0v18M4 7.5l8 4.5 8-4.5' },
+        { key: 'piggy', label: 'Savings & RD', d: 'M5 12a6 6 0 0111-3h2l2 2v3l-2 1a5 5 0 01-2 2v2h-2v-1H9v1H7v-2a5 5 0 01-2-5zm6-3h.01' },
+        { key: 'gold', label: 'Bullion & Metals', d: 'M4 18l2-5h5l2 5H4zm7 0l2-5h5l2 5h-9zM7.5 11l2-5h5l2 5h-9z' },
+        { key: 'rent_in', label: 'Rental Income', d: 'M3 10.5L12 3l9 7.5V20H3v-9.5zm9 1.5v5m-2.5-2.5L12 12l2.5 2.5' },
+        { key: 'loan', label: 'Loan & Debt', d: 'M4 7h16v10H4V7zm8 2a3 3 0 100 6 3 3 0 000-6zM2 12h2m16 0h2' },
+        { key: 'tax', label: 'Tax & Govt Fees', d: 'M4 20h16M5 20V9h14v11M3 9l9-5 9 5M9 13v3m6-3v3' },
+        { key: 'vault', label: 'Fixed Deposit', d: 'M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1zm8 4a3 3 0 100 6 3 3 0 000-6zm0 0v6m-3-3h6' },
+        { key: 'crypto', label: 'Stocks & Crypto', d: 'M8 5v14m0-12h5a2.5 2.5 0 010 5H8m0 0h6a2.5 2.5 0 010 5H8M11 3v2m0 14v2' },
+        { key: 'sports', label: 'Sports & Club', d: 'M12 3a9 9 0 100 18 9 9 0 000-18zm0 0c2.5 3 2.5 15 0 18M3.5 9h17m-17 6h17' },
+        { key: 'ticket', label: 'Events & Tickets', d: 'M4 7h16v3a2 2 0 000 4v3H4v-3a2 2 0 000-4V7zm6 0v10' },
+        { key: 'party', label: 'Celebration', d: 'M4 20l5-13 8 8-13 5zm9-15l2 2m3-1l1 2m-4 4l3 1' },
+        { key: 'star', label: 'VIP & Special', d: 'M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 21l1.1-6.5L2.6 9.8l6.5-.9L12 3z' },
+        { key: 'briefcase', label: 'Office & Career', d: 'M3 8h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm6 0V5a1 1 0 011-1h4a1 1 0 011 1v3m-9 5h12' },
+        { key: 'scale', label: 'Legal & Compliance', d: 'M12 3v18M5 7h14M5 7l-2 6h4L5 7zm14 0l-2 6h4l-2-6zM8 21h8' },
+        { key: 'doc', label: 'Documents & ID', d: 'M6 3h9l4 4v14H6V3zm8 0v5h5M9 12h6M9 16h6' },
+        { key: 'donate', label: 'Charity & Zakat', d: 'M12 14c-3.5-2.5-6-5-6-7.5A3.5 3.5 0 0112 4a3.5 3.5 0 016 2.5c0 2.5-2.5 5-6 7.5zm-8 5h16' },
+        { key: 'alarm', label: 'Subscriptions', d: 'M12 6a7 7 0 100 14 7 7 0 000-14zm0 3v4l2.5 1.5M5 3L3 5m16-2l2 2' },
+        { key: 'award', label: 'Rewards & Bonus', d: 'M12 4a5 5 0 100 10 5 5 0 000-10zm-3 9l-1 8 4-2 4 2-1-8' },
+        { key: 'umbrella', label: 'Emergency Fund', d: 'M12 3a9 9 0 00-9 9h18a9 9 0 00-9-9zm0 9v6a2 2 0 01-4 0' },
+        { key: 'globe', label: 'Forex & Overseas', d: 'M12 3a9 9 0 100 18 9 9 0 000-18zm0 0c3 3 3 15 0 18m0-18C9 6 9 18 12 21M3 12h18' },
+        { key: 'wrench', label: 'Auto Service', d: 'M14.7 6.3a4 4 0 00-5.4 5.4l-5.3 5.3a2 2 0 002.8 2.8l5.3-5.3a4 4 0 005.4-5.4l-2.1 2.1-2.8-2.8 2.1-2.1z' },
       ];
 
       const getCategorySvg = (sizeClass = 'w-4 h-4', iconKey = 'tag') => {
@@ -2478,6 +3309,7 @@ function doPost(e) {
           transactions: [],
           plans: [],
           emis: [],
+          currentAssets: [],
           homeSlabOrder: [
             'homeQuickActionsSlab',
             'homeNetWorthSlab',
@@ -2488,12 +3320,16 @@ function doPost(e) {
             'homePlanningSlab',
             'homeCategoriesSlab',
           ],
+          accountTypeOrder: ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'],
+          accountTypeLabels: {},
+          customAccountTypes: [],
           includePrevMonthNetWorth: false,
           includeEmiPrincipalInCcLimit: true,
           themeMode: 'system',
           security: {
             enabled: false,
             pin: '',
+            currentAssetPin: '',
           },
           syncConfig: {
             clientOrUrl: '',
@@ -2512,6 +3348,7 @@ function doPost(e) {
           mode: 'unlock',
           buffer: '',
           tempPin: '',
+          afterSetupOpenCurrentAssets: false,
         },
         syncBusy: false,
         autoSyncTimer: null,
@@ -2523,23 +3360,46 @@ function doPost(e) {
       // 4. FORMATTING, ESCAPING & UI HELPERS
       // =======================================================================
       const safeNum = (v) => Math.max(0, parseFloat(v) || 0);
+      const isZeroAmount = (v) => Math.abs(Math.round((Number(v) || 0) * 100)) === 0;
+      const getAccountBalanceColor = (val, posClass, negClass) => {
+        if (isZeroAmount(val)) return 'acc-zero-balance';
+        return Number(val) > 0 ? posClass : negClass;
+      };
 
       const formatINR = (amount) => {
         const num = Number(amount) || 0;
+        if (Math.abs(Math.round(num * 100)) === 0) return '₹0';
         const isNeg = num < 0;
         const abs = Math.abs(num);
-        const hasFraction = Math.round(abs * 100) % 100 !== 0;
         try {
           const formatted = new Intl.NumberFormat('en-IN', {
             style: 'currency',
             currency: 'INR',
-            minimumFractionDigits: hasFraction ? 2 : 0,
-            maximumFractionDigits: hasFraction ? 2 : 0,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
           }).format(abs);
           return isNeg ? `-${formatted}` : formatted;
         } catch (err) {
-          const fallback = hasFraction ? abs.toFixed(2) : Math.round(abs).toString();
+          const fallback = abs.toFixed(2);
           return isNeg ? `-₹${fallback}` : `₹${fallback}`;
+        }
+      };
+
+      const formatINRWhole = (amount) => {
+        const num = Math.round(Number(amount) || 0);
+        if (num === 0) return '₹0';
+        const isNeg = num < 0;
+        const abs = Math.abs(num);
+        try {
+          const formatted = new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(abs);
+          return isNeg ? `-${formatted}` : formatted;
+        } catch (err) {
+          return isNeg ? `-₹${abs}` : `₹${abs}`;
         }
       };
 
@@ -2557,14 +3417,24 @@ function doPost(e) {
         }
       };
 
+      const getOrdinalSuffix = (day) => {
+        const n = Math.abs(parseInt(day, 10)) || 0;
+        const mod100 = n % 100;
+        if (mod100 >= 11 && mod100 <= 13) return 'th';
+        const mod10 = n % 10;
+        if (mod10 === 1) return 'st';
+        if (mod10 === 2) return 'nd';
+        if (mod10 === 3) return 'rd';
+        return 'th';
+      };
+
       const formatShortDayMonth = (isoDate) => {
         try {
           const parts = String(isoDate || '').split('-').map(Number);
           if (parts.length !== 3 || parts.some(isNaN)) return String(isoDate || '');
-          return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-IN', {
-            day: 'numeric',
-            month: 'short',
-          });
+          const day = parts[2];
+          const monthName = MONTH_FULL[parts[1] - 1] || '';
+          return `${day}${getOrdinalSuffix(day)} ${monthName}`.trim();
         } catch (err) {
           return String(isoDate || '');
         }
@@ -2749,6 +3619,7 @@ function doPost(e) {
         transactions: [],
         plans: [],
         emis: [],
+        currentAssets: [],
         homeSlabOrder: [
           'homeQuickActionsSlab',
           'homeNetWorthSlab',
@@ -2759,12 +3630,16 @@ function doPost(e) {
           'homePlanningSlab',
           'homeCategoriesSlab',
         ],
+        accountTypeOrder: ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'],
+        accountTypeLabels: {},
+        customAccountTypes: [],
         includePrevMonthNetWorth: false,
         includeEmiPrincipalInCcLimit: true,
         themeMode: 'system',
         security: {
           enabled: false,
           pin: '',
+          currentAssetPin: '',
         },
         syncConfig: {
           clientOrUrl: '',
@@ -2787,10 +3662,22 @@ function doPost(e) {
           (rawObj.openingBalances && typeof rawObj.openingBalances === 'object' ? rawObj.openingBalances : null) ||
           (rawObj.monthBalances && typeof rawObj.monthBalances === 'object' ? rawObj.monthBalances : {});
 
+        const customAccountTypes = Array.isArray(rawObj.customAccountTypes)
+          ? rawObj.customAccountTypes
+              .filter((t) => t && typeof t === 'object' && typeof t.key === 'string' && t.key.trim() && !ACCOUNT_TYPES[t.key])
+              .map((t, idx) => ({
+                key: String(t.key).trim().replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 32),
+                label: String(t.label || `Custom ${idx + 1}`).trim().slice(0, 32),
+                kind: t.kind === 'liability' ? 'liability' : 'asset',
+                color: normalizeHex(t.color, CURATED_SWATCHES[(idx + 6) % CURATED_SWATCHES.length]),
+              }))
+          : [];
+        const customTypeKeys = new Set(customAccountTypes.map((t) => t.key));
+
         const accounts = Array.isArray(rawObj.accounts) && rawObj.accounts.length > 0
           ? rawObj.accounts.map((a, idx) => {
               const rawType = a.type === 'credit' ? 'credit_card' : String(a.type || 'saving');
-              const normType = ACCOUNT_TYPES[rawType] ? rawType : 'saving';
+              const normType = ACCOUNT_TYPES[rawType] || customTypeKeys.has(rawType) ? rawType : 'saving';
               const isCard = normType === 'credit_card';
               const meta = getAccountTypeMeta(normType);
               const id = String(a.id || `acc-${idx}`);
@@ -2884,6 +3771,7 @@ function doPost(e) {
         const rawSync = rawObj.syncConfig && typeof rawObj.syncConfig === 'object' ? rawObj.syncConfig : {};
         const rawSec = rawObj.security && typeof rawObj.security === 'object' ? rawObj.security : {};
         const validPin = /^\d{4}$/.test(String(rawSec.pin || '')) ? String(rawSec.pin) : '';
+        const validCaPin = /^\d{4}$/.test(String(rawSec.currentAssetPin || '')) ? String(rawSec.currentAssetPin) : '';
         const themeMode = ['light', 'dark', 'system'].includes(rawObj.themeMode) ? rawObj.themeMode : 'system';
 
         const emis = Array.isArray(rawObj.emis)
@@ -2919,12 +3807,25 @@ function doPost(e) {
               })
           : [];
 
+        const currentAssets = Array.isArray(rawObj.currentAssets)
+          ? rawObj.currentAssets
+              .filter((ca) => ca && typeof ca === 'object')
+              .map((ca, idx) => ({
+                id: String(ca.id || `ca-${idx}`),
+                name: String(ca.name || `Asset ${idx + 1}`).slice(0, 45),
+                balance: Number.isFinite(parseFloat(ca.balance)) ? parseFloat(ca.balance) : 0,
+                color: normalizeHex(ca.color, '#06b6d4'),
+                note: String(ca.note || '').slice(0, 80),
+              }))
+          : [];
+
         return {
           accounts,
           categories,
           transactions,
           plans,
           emis,
+          currentAssets,
           homeSlabOrder: (() => {
             const def = [
               'homeQuickActionsSlab',
@@ -2941,6 +3842,24 @@ function doPost(e) {
             def.forEach((id) => { if (!valid.includes(id)) valid.push(id); });
             return valid;
           })(),
+          customAccountTypes,
+          accountTypeOrder: (() => {
+            const def = ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card', ...customAccountTypes.map((t) => t.key)];
+            if (!Array.isArray(rawObj.accountTypeOrder)) return def;
+            const valid = rawObj.accountTypeOrder.filter((k) => def.includes(k));
+            def.forEach((k) => { if (!valid.includes(k)) valid.push(k); });
+            return valid;
+          })(),
+          accountTypeLabels: (() => {
+            const out = {};
+            if (rawObj.accountTypeLabels && typeof rawObj.accountTypeLabels === 'object') {
+              ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'].forEach((k) => {
+                const v = String(rawObj.accountTypeLabels[k] || '').trim().slice(0, 32);
+                if (v) out[k] = v;
+              });
+            }
+            return out;
+          })(),
           includePrevMonthNetWorth: Boolean(rawObj.includePrevMonthNetWorth),
           includeEmiPrincipalInCcLimit: rawObj.includeEmiPrincipalInCcLimit !== undefined
             ? Boolean(rawObj.includeEmiPrincipalInCcLimit)
@@ -2949,6 +3868,7 @@ function doPost(e) {
           security: {
             enabled: Boolean(rawSec.enabled) && validPin.length === 4,
             pin: validPin,
+            currentAssetPin: validCaPin,
           },
           syncConfig: {
             clientOrUrl: String(rawSync.clientOrUrl || rawSync.scriptUrl || ''),
@@ -3189,7 +4109,7 @@ function doPost(e) {
             opening,
             balance: opening,
             limit,
-            used: acc.type === 'due_to_others' ? opening : 0,
+            used: isNonCardLiabilityType(acc.type) ? opening : 0,
             available: limit,
             monthExpense: 0,
             billing: null,
@@ -3214,7 +4134,7 @@ function doPost(e) {
               if (!isLiabilityType(m.account.type)) m.balance += amt;
               else {
                 m.used -= amt;
-                if (m.account.type === 'due_to_others') m.balance = m.used;
+                if (isNonCardLiabilityType(m.account.type)) m.balance = m.used;
               }
             }
           } else if (tx.type === 'expense') {
@@ -3227,7 +4147,7 @@ function doPost(e) {
               else {
                 m.used += amt;
                 m.monthExpense += amt;
-                if (m.account.type === 'due_to_others') m.balance = m.used;
+                if (isNonCardLiabilityType(m.account.type)) m.balance = m.used;
               }
             }
           } else if (tx.type === 'transfer') {
@@ -3237,14 +4157,14 @@ function doPost(e) {
               if (!isLiabilityType(fromM.account.type)) fromM.balance -= amt;
               else {
                 fromM.used += amt;
-                if (fromM.account.type === 'due_to_others') fromM.balance = fromM.used;
+                if (isNonCardLiabilityType(fromM.account.type)) fromM.balance = fromM.used;
               }
             }
             if (toM) {
               if (!isLiabilityType(toM.account.type)) toM.balance += amt;
               else {
                 toM.used -= amt;
-                if (toM.account.type === 'due_to_others') toM.balance = toM.used;
+                if (isNonCardLiabilityType(toM.account.type)) toM.balance = toM.used;
               }
             }
           } else if (tx.type === 'correction') {
@@ -3257,7 +4177,7 @@ function doPost(e) {
                 m.balance += signed;
               } else {
                 m.used += signed;
-                if (m.account.type === 'due_to_others') m.balance = m.used;
+                if (isNonCardLiabilityType(m.account.type)) m.balance = m.used;
                 else totalCCCorrectionNet += signed;
               }
             }
@@ -3273,7 +4193,7 @@ function doPost(e) {
           if (!isLiabilityType(m.account.type)) {
             totalAssetBalance += m.balance;
             if (m.account.type === 'saving') totalSavingsBalance += m.balance;
-          } else if (m.account.type === 'due_to_others') {
+          } else if (isNonCardLiabilityType(m.account.type)) {
             totalDueToOthers += m.balance;
           } else {
             const emiBlocked = (state.store.emis || [])
@@ -3298,8 +4218,11 @@ function doPost(e) {
           }
         });
 
-        // True Net Worth = Total Asset Balances (Saving + Wallet + Cashback + Due From Others) - Entire Credit Card Outstanding (billed + unbilled) - Due To Others
-        const baseNetWorth = round2(totalAssetBalance - totalCcOutstanding - totalDueToOthers);
+        // Total Liability = Entire Credit Card Outstanding (billed + unbilled + EMI) + Due To Others + Custom Liability Accounts
+        const totalLiabilityBalance = round2(totalCcOutstanding + totalDueToOthers);
+
+        // True Net Worth = Total Asset Balance - Total Liability
+        const baseNetWorth = round2(totalAssetBalance - totalLiabilityBalance);
 
         return {
           monthKey,
@@ -3309,6 +4232,7 @@ function doPost(e) {
           monthExpense,
           totalSavingsBalance,
           totalAssetBalance,
+          totalLiabilityBalance,
           totalCCCorrectionNet,
           baseNetWorth,
           catExpenseMap,
@@ -3339,7 +4263,7 @@ function doPost(e) {
           state.previousView = state.activeView;
         }
         state.activeView = viewName;
-        ['home', 'flow', 'emi', 'planning', 'creditcards', 'accounts', 'account-detail', 'categories', 'history', 'settings'].forEach((v) => {
+        ['home', 'flow', 'emi', 'planning', 'creditcards', 'accounts', 'account-detail', 'categories', 'history', 'settings', 'current-assets'].forEach((v) => {
           const section = document.getElementById(`view-${v}`);
           if (section) section.classList.toggle('hidden', v !== viewName);
         });
@@ -3349,6 +4273,8 @@ function doPost(e) {
             ? 'accounts'
             : ['flow', 'emi', 'planning'].includes(viewName)
             ? 'home'
+            : viewName === 'current-assets'
+            ? 'settings'
             : viewName;
         document.querySelectorAll('.bottom-nav-btn').forEach((btn) => {
           const active = btn.dataset.nav === navHighlight;
@@ -3462,8 +4388,24 @@ function doPost(e) {
             homeSection.insertBefore(bar, el);
           });
         } else if (state.activeView === 'accounts') {
-          Object.keys(ACCOUNT_TYPES).forEach((accType) => {
-            const meta = ACCOUNT_TYPES[accType];
+          const sectionsWrap = document.getElementById('accountTypeSectionsContainer');
+          const typeOrder = getAccountTypeOrder();
+          if (sectionsWrap && typeOrder.length > 1) {
+            typeOrder.forEach((accType, idx) => {
+              const secEl = sectionsWrap.querySelector(`[data-acc-type-section="${accType}"]`);
+              if (!secEl) return;
+              const bar = buildBar(`Type: ${getAccountTypeMeta(accType).label}`, idx > 0, idx < typeOrder.length - 1, (delta) => {
+                if (!Array.isArray(state.store.accountTypeOrder)) state.store.accountTypeOrder = [...typeOrder];
+                if (moveArrayItem(state.store.accountTypeOrder, idx, delta)) {
+                  saveStore();
+                  renderActiveView();
+                }
+              });
+              sectionsWrap.insertBefore(bar, secEl);
+            });
+          }
+          typeOrder.forEach((accType) => {
+            const meta = getAccountTypeMeta(accType);
             const listEl = document.getElementById(meta.listId);
             const accs = state.store.accounts.filter((a) => a.type === accType);
             if (listEl && accs.length > 1) {
@@ -3544,6 +4486,22 @@ function doPost(e) {
               planList.insertBefore(bar, card);
             });
           }
+        } else if (state.activeView === 'current-assets') {
+          const caList = document.getElementById('currentAssetsList');
+          const caItems = state.store.currentAssets || [];
+          if (caList && caItems.length > 1) {
+            Array.from(caList.children).forEach((card, idx) => {
+              const item = caItems[idx];
+              if (!item) return;
+              const bar = buildBar(item.name, idx > 0, idx < caItems.length - 1, (delta) => {
+                if (moveArrayItem(state.store.currentAssets, idx, delta)) {
+                  saveStore();
+                  renderActiveView();
+                }
+              });
+              caList.insertBefore(bar, card);
+            });
+          }
         }
       };
 
@@ -3562,6 +4520,7 @@ function doPost(e) {
         if (state.activeView === 'categories') renderCategoriesPage();
         if (state.activeView === 'history') renderHistoryPage();
         if (state.activeView === 'settings') renderSettingsPage();
+        if (state.activeView === 'current-assets') renderCurrentAssetsPage();
         injectReorderBars();
       };
 
@@ -3594,9 +4553,13 @@ function doPost(e) {
         const ccAvailEl = document.getElementById('homeCcAvailable');
         ccAvailEl.textContent = formatINR(totalCcAvailable);
         ccAvailEl.className = `text-sm font-extrabold tabular-nums leading-tight mt-0.5 truncate ${
-          totalCcAvailable < 0 ? 'text-rose-600' : 'text-amber-600'
+          getAccountBalanceColor(totalCcAvailable, 'text-amber-600', 'text-rose-600')
         }`;
-        document.getElementById('homeCcExpense').textContent = formatINR(totalCcUsed);
+        const ccExpEl = document.getElementById('homeCcExpense');
+        ccExpEl.textContent = formatINR(totalCcUsed);
+        ccExpEl.className = `text-sm font-extrabold tabular-nums leading-tight mt-0.5 truncate ${
+          getAccountBalanceColor(totalCcUsed, 'text-rose-600', 'text-emerald-600')
+        }`;
         document.getElementById('homeCcUtilPct').textContent = `${utilPct.toFixed(1)}%`;
 
         const barEl = document.getElementById('homeCcUtilBar');
@@ -3641,7 +4604,7 @@ function doPost(e) {
         if (homeSavBalEl) {
           homeSavBalEl.textContent = formatINR(snap.totalSavingsBalance);
           homeSavBalEl.className = `text-sm font-extrabold tabular-nums leading-tight ${
-            snap.totalSavingsBalance < 0 ? 'text-rose-600' : 'text-emerald-600'
+            getAccountBalanceColor(snap.totalSavingsBalance, 'text-emerald-600', 'text-rose-600')
           }`;
         }
         const homeSavCountEl = document.getElementById('homeSavingsCount');
@@ -3650,7 +4613,7 @@ function doPost(e) {
         }
 
         // SLAB 4: Income & Expense (No Bar Chart)
-        document.getElementById('homeFlowMonthLabel').textContent = `${MONTH_SHORT[state.selectedMonth]} ${state.selectedYear}`;
+        document.getElementById('homeFlowMonthLabel').textContent = `${MONTH_FULL[state.selectedMonth]} ${state.selectedYear}`;
         document.getElementById('homeMonthIncome').textContent = formatINR(snap.monthIncome);
         document.getElementById('homeMonthExpense').textContent = formatINR(snap.monthExpense);
 
@@ -3764,13 +4727,13 @@ function doPost(e) {
             .map((c) => {
               const pct = activeCatTotal > 0 ? ((c.amount / activeCatTotal) * 100).toFixed(0) : '0';
               return `
-                <div class="flex items-center justify-between gap-2 text-xs">
-                  <div class="flex items-center gap-2 min-w-0">
-                    <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${c.color}"></span>
+                <div class="flex items-center justify-between gap-1.5 text-[10.8px] leading-tight">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${c.color}"></span>
                     <span class="text-slate-700 font-medium truncate">${escapeHtml(c.name)}</span>
                   </div>
                   <div class="shrink-0 tabular-nums font-bold text-slate-900 whitespace-nowrap">
-                    ${formatINR(c.amount)} <span class="text-[11px] font-medium text-slate-500">(${pct}%)</span>
+                    ${formatINRWhole(c.amount)} <span class="text-[9.9px] font-medium text-slate-500">(${pct}%)</span>
                   </div>
                 </div>
               `;
@@ -4146,6 +5109,7 @@ function doPost(e) {
         }
 
         updateEmiModalPreviews();
+        syncAllGlassControls();
         document.getElementById('emiModal').classList.remove('hidden');
         setTimeout(() => document.getElementById('emiPurposeInput').focus(), 60);
       };
@@ -4361,6 +5325,7 @@ function doPost(e) {
         document.getElementById('planningEntryCategory').innerHTML = state.store.categories.map((c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
         if (entry) { setPlanningEntryType(entry.type); document.getElementById('planningEntryAmount').value = entry.amount; document.getElementById('planningEntryCategory').value = entry.categoryId || ''; document.getElementById('planningEntryNote').value = entry.note || ''; }
         else setPlanningEntryType('expense');
+        syncGlassSelectTrigger('planningEntryCategory');
         document.getElementById('planningEntryModal').classList.remove('hidden');
       };
 
@@ -4429,33 +5394,30 @@ function doPost(e) {
               ? `<p class="text-[10px] font-semibold text-cyan-700 tabular-nums mt-0.5 truncate">Incl. EMI+GST: ${formatINR(bill.emiBilledAmount)}</p>`
               : '';
 
-            const billedColor = 'text-rose-600 dark:text-rose-400';
+            const billedColor = isZeroAmount(bill.billedAmount) ? 'acc-zero-balance' : 'text-rose-600 dark:text-rose-400';
 
             const balToPay = Math.max(0, round2(bill.balanceToPay ?? bill.billedAmount));
-            const balToPayColor = 'text-rose-600 dark:text-rose-400';
+            const balToPayColor = isZeroAmount(balToPay) ? 'acc-zero-balance' : 'text-rose-600 dark:text-rose-400';
 
             return `
               <div data-reorder-id="${escapeHtml(acc.id)}" data-open-account="${escapeHtml(acc.id)}" class="rounded-2xl bg-white border border-slate-200 hover:border-amber-400 px-3 py-2.5 shadow-sm space-y-2 cursor-pointer transition">
-                <div class="flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-2.5 min-w-0">
-                    <button type="button" data-edit-acc="${escapeHtml(acc.id)}" title="Edit card or colour" class="edit-acc-btn w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95" style="${getTintedBadgeStyle(color)}">
-                      ${getAccountSvg('credit_card', 'w-4 h-4')}
-                    </button>
-                    <div class="min-w-0">
-                      <div class="flex items-center gap-1.5 min-w-0">
-                        <h3 class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(acc.name)}</h3>
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-bold shrink-0 ${bill.statusClass}">
-                          ${escapeHtml(bill.statusLabel)}
-                        </span>
-                      </div>
-                      <p class="text-[11px] text-slate-500 mt-0.5 truncate">
-                        Bill: <span class="font-bold text-slate-700">${escapeHtml(bill.billDateLabel)}</span> • Due: <span class="font-bold text-amber-700">${escapeHtml(bill.dueDateLabel)}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <button type="button" data-edit-acc="${escapeHtml(acc.id)}" class="edit-acc-btn shrink-0 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
-                    Edit
+                <div class="flex items-start gap-2.5">
+                  <button type="button" data-edit-acc="${escapeHtml(acc.id)}" title="Edit or delete card" class="edit-acc-btn w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95 mt-0.5" style="${getTintedBadgeStyle(color)}">
+                    ${getAccountSvg('credit_card', 'w-4 h-4')}
                   </button>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center justify-between gap-1.5">
+                      <h3 class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(acc.name)}</h3>
+                      <span class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-bold shrink-0 ${bill.statusClass}">
+                        ${escapeHtml(bill.statusLabel)}
+                      </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 leading-snug">
+                      <span class="whitespace-nowrap">Bill Date: <span class="font-bold text-slate-700">${escapeHtml(bill.billDateLabel)}</span></span>
+                      <span class="text-slate-300">•</span>
+                      <span class="whitespace-nowrap">Due Date: <span class="font-bold text-amber-700">${escapeHtml(bill.dueDateLabel)}</span></span>
+                    </p>
+                  </div>
                 </div>
 
                 <div class="space-y-1.5">
@@ -4471,13 +5433,13 @@ function doPost(e) {
                     </div>
                     <div class="min-w-0 rounded-lg bg-slate-50 border border-slate-200/80 px-2 py-1.5">
                       <p class="text-[10px] font-medium text-slate-500 leading-tight truncate">Unbilled Spend</p>
-                      <p class="text-xs font-extrabold text-indigo-600 tabular-nums mt-0.5 leading-tight truncate">${formatINR(bill.unbilledSpend)}</p>
+                      <p class="text-xs font-extrabold ${isZeroAmount(bill.unbilledSpend) ? 'acc-zero-balance' : 'text-indigo-600'} tabular-nums mt-0.5 leading-tight truncate">${formatINR(bill.unbilledSpend)}</p>
                     </div>
                   </div>
                   <div class="grid grid-cols-2 gap-1.5">
                     <div class="min-w-0 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1.5">
                       <p class="text-[11px] font-medium text-slate-500 leading-tight truncate">Available Limit</p>
-                      <p class="text-sm font-extrabold ${m.available < 0 ? 'text-rose-600' : 'text-amber-600'} tabular-nums mt-0.5 leading-tight truncate">${formatINR(m.available)}</p>
+                      <p class="text-sm font-extrabold ${getAccountBalanceColor(m.available, 'text-amber-600', 'text-rose-600')} tabular-nums mt-0.5 leading-tight truncate">${formatINR(m.available)}</p>
                       ${emiNoteHtml}
                     </div>
                     <div class="min-w-0 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1.5">
@@ -4497,12 +5459,9 @@ function doPost(e) {
                   </div>
                 </div>
 
-                <div class="flex items-center gap-1.5">
-                  <button type="button" data-pay-card="${escapeHtml(acc.id)}" class="pay-card-btn flex-1 py-1.5 px-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs transition active:scale-95">
+                <div class="flex items-center">
+                  <button type="button" data-pay-card="${escapeHtml(acc.id)}" class="pay-card-btn w-full py-1.5 px-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs transition active:scale-95">
                     Pay Card
-                  </button>
-                  <button type="button" data-delete-acc="${escapeHtml(acc.id)}" class="delete-acc-btn py-1.5 px-3 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 text-xs font-bold transition">
-                    Delete
                   </button>
                 </div>
               </div>
@@ -4521,14 +5480,125 @@ function doPost(e) {
         const all = Object.values(snap.accountMetrics);
         const credits = all.filter((m) => m.account.type === 'credit_card');
 
-        document.getElementById('accMonthSubtitle').textContent =
-          `${MONTH_SHORT[state.selectedMonth]} ${state.selectedYear} • Long-press any slab to reorder`;
+        document.getElementById('accMonthSubtitle').textContent = 'Tap on icon to edit';
 
-        const totalAssets = snap.totalAssetBalance ?? all.filter((m) => !isCreditCardType(m.account.type)).reduce((s, m) => s + m.balance, 0);
-        const totalCcUsed = credits.reduce((s, m) => s + (m.accountUsed ?? Math.max(0, m.used)), 0);
+        const totalAssets = snap.totalAssetBalance ?? all.filter((m) => !isLiabilityType(m.account.type)).reduce((s, m) => s + m.balance, 0);
+        const totalLiability = snap.totalLiabilityBalance ?? round2(
+          credits.reduce((s, m) => s + (m.accountUsed ?? Math.max(0, m.used)), 0) +
+          all.filter((m) => isNonCardLiabilityType(m.account.type)).reduce((s, m) => s + m.balance, 0)
+        );
 
-        document.getElementById('accTotalSavings').textContent = formatINR(totalAssets);
-        document.getElementById('accTotalCcUsed').textContent = formatINR(totalCcUsed);
+        const assetEl = document.getElementById('accTotalSavings');
+        if (assetEl) {
+          assetEl.textContent = formatINR(totalAssets);
+          assetEl.className = `text-lg font-extrabold tabular-nums mt-1 truncate ${getAccountBalanceColor(totalAssets, 'text-emerald-600', 'text-rose-600')}`;
+        }
+        const liabEl = document.getElementById('accTotalLiability');
+        if (liabEl) {
+          liabEl.textContent = formatINR(totalLiability);
+          liabEl.className = `text-lg font-extrabold tabular-nums mt-1 truncate ${getAccountBalanceColor(totalLiability, 'text-rose-600', 'text-emerald-600')}`;
+        }
+
+        const sectionsWrap = document.getElementById('accountTypeSectionsContainer');
+        const customTypes = getCustomAccountTypes();
+        const customTypeKeySet = new Set(customTypes.map((t) => t.key));
+
+        // Remove stale custom sections if deleted
+        if (sectionsWrap) {
+          sectionsWrap.querySelectorAll('[data-custom-type-section]').forEach((el) => {
+            if (!customTypeKeySet.has(el.dataset.accTypeSection)) el.remove();
+          });
+          // Ensure a DOM section exists for every custom account type
+          customTypes.forEach((ct) => {
+            let secEl = sectionsWrap.querySelector(`[data-acc-type-section="${ct.key}"]`);
+            if (!secEl) {
+              secEl = document.createElement('div');
+              secEl.setAttribute('data-acc-type-section', ct.key);
+              secEl.setAttribute('data-custom-type-section', 'true');
+              secEl.className = 'space-y-2.5';
+              secEl.innerHTML = `
+                <div class="flex items-center justify-between">
+                  <h3 id="accTypeHeading-${escapeHtml(ct.key)}" class="text-xs font-bold uppercase tracking-wider"></h3>
+                  <span id="customCountLabel-${escapeHtml(ct.key)}" class="text-xs text-slate-500">0 accounts</span>
+                </div>
+                <div id="customAccountsList-${escapeHtml(ct.key)}" data-custom-acc-list="true" class="space-y-2.5"></div>
+              `;
+              sectionsWrap.appendChild(secEl);
+            }
+          });
+        }
+
+        const typeOrder = getAccountTypeOrder();
+        typeOrder.forEach((accType) => {
+          const secEl = sectionsWrap ? sectionsWrap.querySelector(`[data-acc-type-section="${accType}"]`) : null;
+          if (secEl && sectionsWrap) sectionsWrap.appendChild(secEl);
+          const headingEl = document.getElementById(`accTypeHeading-${accType}`);
+          if (headingEl) {
+            const meta = getAccountTypeMeta(accType);
+            if (meta.isCustom) {
+              headingEl.textContent = meta.label;
+              headingEl.style.color = meta.defaultColor;
+            } else {
+              const customLabel = state.store.accountTypeLabels && state.store.accountTypeLabels[accType];
+              const defaultHeadings = {
+                saving: 'Saving Accounts',
+                wallet: 'Wallet',
+                cashback: 'Cashback',
+                due_from_others: 'Due From Others',
+                due_to_others: 'Due To Others',
+                credit_card: 'Credit Cards',
+              };
+              headingEl.textContent = customLabel ? customLabel : (defaultHeadings[accType] || meta.label);
+            }
+          }
+        });
+
+        // Render accounts for custom account types
+        customTypes.forEach((ct) => {
+          const meta = getAccountTypeMeta(ct.key);
+          const items = all.filter((m) => m.account.type === ct.key);
+          const countEl = document.getElementById(meta.countId);
+          if (countEl) {
+            const subTotal = items.reduce((s, m) => s + m.balance, 0);
+            countEl.textContent = items.length > 0
+              ? `${items.length} account${items.length === 1 ? '' : 's'} • ${formatINR(subTotal)}`
+              : '0 accounts';
+          }
+          const listEl = document.getElementById(meta.listId);
+          if (!listEl) return;
+          if (items.length === 0) {
+            listEl.innerHTML = `<div class="rounded-2xl bg-white border border-slate-200 p-4 text-center text-xs text-slate-500">${escapeHtml(meta.emptyText)}</div>`;
+          } else {
+            const isLiab = ct.kind === 'liability';
+            listEl.innerHTML = items
+              .map((m) => {
+                const acc = m.account;
+                const color = normalizeHex(acc.color, meta.defaultColor);
+                const balColor = isLiab
+                  ? getAccountBalanceColor(m.balance, 'text-rose-600', 'text-emerald-600')
+                  : getAccountBalanceColor(m.balance, 'text-emerald-600', 'text-rose-600');
+                return `
+                  <div data-reorder-id="${escapeHtml(acc.id)}" data-open-account="${escapeHtml(acc.id)}" class="rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 p-3.5 flex items-center justify-between gap-2.5 shadow-sm cursor-pointer transition">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <button type="button" data-edit-acc="${escapeHtml(acc.id)}" title="Edit account or colour" class="edit-acc-btn w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95" style="${getTintedBadgeStyle(color)}">
+                        ${getAccountSvg(acc.type, 'w-5 h-5')}
+                      </button>
+                      <div class="min-w-0">
+                        <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(acc.name)}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5 tabular-nums truncate">Opening: ${formatINR(m.opening)}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      <p class="text-sm font-extrabold tabular-nums ${balColor}">${formatINR(m.balance)}</p>
+
+                    </div>
+                  </div>
+                `;
+              })
+              .join('');
+            bindAccountActions(listEl);
+          }
+        });
 
         ASSET_ACCOUNT_TYPES.forEach((accType) => {
           const meta = ACCOUNT_TYPES[accType];
@@ -4561,9 +5631,8 @@ function doPost(e) {
                       </div>
                     </div>
                     <div class="flex items-center gap-1.5 shrink-0">
-                      <p class="text-sm font-extrabold tabular-nums ${m.balance >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${formatINR(m.balance)}</p>
-                      <button type="button" data-edit-acc="${escapeHtml(acc.id)}" class="edit-acc-btn px-2 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">Edit</button>
-                      <button type="button" data-delete-acc="${escapeHtml(acc.id)}" class="delete-acc-btn inline-flex items-center justify-center p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-700 transition" aria-label="Delete" title="Delete">${getBinSvg('w-3.5 h-3.5')}</button>
+                      <p class="text-sm font-extrabold tabular-nums ${getAccountBalanceColor(m.balance, 'text-emerald-600', 'text-rose-600')}">${formatINR(m.balance)}</p>
+
                     </div>
                   </div>
                 `;
@@ -4603,9 +5672,8 @@ function doPost(e) {
                       </div>
                     </div>
                     <div class="flex items-center gap-1.5 shrink-0">
-                      <p class="text-sm font-extrabold tabular-nums ${m.balance > 0 ? 'text-rose-600' : 'text-emerald-600'}">${formatINR(m.balance)}</p>
-                      <button type="button" data-edit-acc="${escapeHtml(acc.id)}" class="edit-acc-btn px-2 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">Edit</button>
-                      <button type="button" data-delete-acc="${escapeHtml(acc.id)}" class="delete-acc-btn inline-flex items-center justify-center p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-700 transition" aria-label="Delete" title="Delete">${getBinSvg('w-3.5 h-3.5')}</button>
+                      <p class="text-sm font-extrabold tabular-nums ${getAccountBalanceColor(m.balance, 'text-rose-600', 'text-emerald-600')}">${formatINR(m.balance)}</p>
+
                     </div>
                   </div>
                 `;
@@ -4624,27 +5692,22 @@ function doPost(e) {
               const acc = m.account;
               const bill = m.billing;
               const color = normalizeHex(acc.color, '#6366f1');
-              const cycleHint = bill.hasBilling
-                ? ` • Bill ${bill.billDateLabel}${bill.hasDue ? ` / Due ${bill.dueDateLabel}` : ''}`
-                : '';
+              const usedVal = m.accountUsed ?? Math.max(0, m.used);
               return `
-                <div data-reorder-id="${escapeHtml(acc.id)}" data-open-account="${escapeHtml(acc.id)}" class="rounded-2xl bg-white border border-slate-200 hover:border-amber-400 p-3.5 flex items-center justify-between gap-2.5 shadow-sm cursor-pointer transition">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <button type="button" data-edit-acc="${escapeHtml(acc.id)}" title="Edit card or colour" class="edit-acc-btn w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95" style="${getTintedBadgeStyle(color)}">
-                      ${getAccountSvg('credit_card', 'w-5 h-5')}
-                    </button>
-                    <div class="min-w-0">
-                      <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(acc.name)}</p>
-                      <p class="text-[11px] text-slate-500 mt-0.5 tabular-nums truncate">Avail: <span class="text-amber-700 font-bold">${formatINR(m.available)}</span>${escapeHtml(cycleHint)}</p>
+                <div data-reorder-id="${escapeHtml(acc.id)}" data-open-account="${escapeHtml(acc.id)}" class="rounded-2xl bg-white border border-slate-200 hover:border-amber-400 p-3.5 flex items-center gap-3 shadow-sm cursor-pointer transition">
+                  <button type="button" data-edit-acc="${escapeHtml(acc.id)}" title="Edit or delete card" class="edit-acc-btn w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95" style="${getTintedBadgeStyle(color)}">
+                    ${getAccountSvg('credit_card', 'w-5 h-5')}
+                  </button>
+                  <div class="min-w-0 flex-1 space-y-0.5 leading-snug">
+                    <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(acc.name)}</p>
+                    <div class="flex items-baseline justify-between gap-2 text-[11px] text-slate-500">
+                      <span class="truncate">Bill Date: <span class="font-bold text-slate-700">${escapeHtml(bill.billDateLabel)}</span></span>
+                      <span class="shrink-0 tabular-nums whitespace-nowrap text-right">Available Limit: <span class="font-extrabold ${getAccountBalanceColor(m.available, 'text-amber-600', 'text-rose-600')}">${formatINR(m.available)}</span></span>
                     </div>
-                  </div>
-                  <div class="flex items-center gap-1.5 shrink-0">
-                    <div class="text-right">
-                      <p class="text-sm font-extrabold text-rose-600 tabular-nums">${formatINR(m.accountUsed ?? Math.max(0, m.used))}</p>
-                      <p class="text-[10px] text-slate-400">used</p>
+                    <div class="flex items-baseline justify-between gap-2 text-[11px] text-slate-500">
+                      <span class="truncate">Due Date: <span class="font-bold text-amber-700">${escapeHtml(bill.dueDateLabel)}</span></span>
+                      <span class="shrink-0 tabular-nums whitespace-nowrap text-right">Used Limit: <span class="font-extrabold ${getAccountBalanceColor(usedVal, 'text-rose-600', 'text-emerald-600')}">${formatINR(usedVal)}</span></span>
                     </div>
-                    <button type="button" data-edit-acc="${escapeHtml(acc.id)}" class="edit-acc-btn px-2 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">Edit</button>
-                    <button type="button" data-delete-acc="${escapeHtml(acc.id)}" class="delete-acc-btn inline-flex items-center justify-center p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-700 transition" aria-label="Delete" title="Delete">${getBinSvg('w-3.5 h-3.5')}</button>
                   </div>
                 </div>
               `;
@@ -4692,19 +5755,20 @@ function doPost(e) {
         const secondaryInfo = document.getElementById('accDetailSecondaryInfo');
 
         if (acc.type === 'credit_card' && m) {
+          const ccOut = m.cardOutstanding ?? Math.max(0, m.used);
           primaryLabel.textContent = `Card Outstanding (${MONTH_SHORT[state.selectedMonth]} ${state.selectedYear})`;
-          primaryVal.textContent = formatINR(m.cardOutstanding ?? Math.max(0, m.used));
-          primaryVal.className = 'text-xl font-extrabold tabular-nums text-rose-600 leading-tight mt-0.5 truncate';
+          primaryVal.textContent = formatINR(ccOut);
+          primaryVal.className = `text-xl font-extrabold tabular-nums leading-tight mt-0.5 truncate ${getAccountBalanceColor(ccOut, 'text-rose-600', 'text-emerald-600')}`;
           secondaryInfo.textContent = `Available: ${formatINR(m.available)} • Limit: ${formatINR(m.limit)}`;
-        } else if (acc.type === 'due_to_others' && m) {
+        } else if (isNonCardLiabilityType(acc.type) && m) {
           primaryLabel.textContent = `Balance Owed (${MONTH_SHORT[state.selectedMonth]} ${state.selectedYear})`;
           primaryVal.textContent = formatINR(m.balance);
-          primaryVal.className = `text-xl font-extrabold tabular-nums leading-tight mt-0.5 truncate ${m.balance > 0 ? 'text-rose-600' : 'text-emerald-600'}`;
+          primaryVal.className = `text-xl font-extrabold tabular-nums leading-tight mt-0.5 truncate ${getAccountBalanceColor(m.balance, 'text-rose-600', 'text-emerald-600')}`;
           secondaryInfo.textContent = `Opening: ${formatINR(m.opening)}`;
         } else if (m) {
           primaryLabel.textContent = `Balance (${MONTH_SHORT[state.selectedMonth]} ${state.selectedYear})`;
           primaryVal.textContent = formatINR(m.balance);
-          primaryVal.className = `text-xl font-extrabold tabular-nums leading-tight mt-0.5 truncate ${m.balance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+          primaryVal.className = `text-xl font-extrabold tabular-nums leading-tight mt-0.5 truncate ${getAccountBalanceColor(m.balance, 'text-emerald-600', 'text-rose-600')}`;
           secondaryInfo.textContent = `Opening: ${formatINR(m.opening)}`;
         }
 
@@ -4959,29 +6023,13 @@ function doPost(e) {
             const expAmt = snap.catExpenseMap[cat.id] || 0;
             const incAmt = snap.catIncomeMap[cat.id] || 0;
             return `
-              <div data-reorder-id="${escapeHtml(cat.id)}" class="rounded-2xl bg-white border border-slate-200 p-3.5 space-y-2.5 shadow-sm">
-                <div class="flex items-center justify-between gap-2.5">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <button type="button" data-edit-cat="${escapeHtml(cat.id)}" title="Edit category, icon or colour" class="edit-cat-btn w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95" style="${getTintedBadgeStyle(color)}">
-                      ${getCategorySvg('w-4 h-4', cat.icon || 'tag')}
-                    </button>
-                    <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(cat.name)}</p>
-                  </div>
-                  <div class="flex items-center gap-1.5 shrink-0">
-                    <button type="button" data-edit-cat="${escapeHtml(cat.id)}" class="edit-cat-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">Edit</button>
-                    <button type="button" data-del-cat="${escapeHtml(cat.id)}" class="del-cat-btn inline-flex items-center justify-center p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-700 transition" aria-label="Delete" title="Delete">${getBinSvg('w-3.5 h-3.5')}</button>
-                  </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                  <div class="rounded-xl bg-slate-50 border border-slate-200/80 px-2.5 py-1.5 flex items-center justify-between gap-1">
-                    <span class="text-slate-500">Expense</span>
-                    <span class="font-bold tabular-nums ${expAmt > 0 ? 'text-rose-600' : 'text-slate-400'}">${formatINR(expAmt)}</span>
-                  </div>
-                  <div class="rounded-xl bg-slate-50 border border-slate-200/80 px-2.5 py-1.5 flex items-center justify-between gap-1">
-                    <span class="text-slate-500">Income</span>
-                    <span class="font-bold tabular-nums ${incAmt > 0 ? 'text-emerald-600' : 'text-slate-400'}">${formatINR(incAmt)}</span>
-                  </div>
-                </div>
+              <div data-reorder-id="${escapeHtml(cat.id)}" class="rounded-2xl bg-white border border-slate-200 px-3 py-2.5 flex items-center gap-2.5 shadow-sm">
+                <button type="button" data-edit-cat="${escapeHtml(cat.id)}" title="Edit or delete category" class="edit-cat-btn w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95" style="${getTintedBadgeStyle(color)}">
+                  ${getCategorySvg('w-4 h-4', cat.icon || 'tag')}
+                </button>
+                <p class="flex-1 min-w-0 text-sm font-extrabold text-slate-900 truncate">${escapeHtml(cat.name)}</p>
+                <span class="w-[78px] shrink-0 text-right text-xs font-extrabold tabular-nums truncate ${incAmt > 0 ? 'text-emerald-600' : 'text-slate-400'}">${formatINR(incAmt)}</span>
+                <span class="w-[78px] shrink-0 text-right text-xs font-extrabold tabular-nums truncate ${expAmt > 0 ? 'text-rose-600' : 'text-slate-400'}">${formatINR(expAmt)}</span>
               </div>
             `;
           })
@@ -4989,35 +6037,6 @@ function doPost(e) {
 
         container.querySelectorAll('.edit-cat-btn').forEach((btn) => {
           btn.addEventListener('click', () => openCategoryModal(btn.dataset.editCat));
-        });
-
-        container.querySelectorAll('.del-cat-btn').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const id = btn.dataset.delCat;
-            const cat = getCategoryById(id);
-            if (!cat) return;
-            if (state.store.categories.length <= 1) {
-              showToast('Keep at least one category', 'error');
-              return;
-            }
-            const usedCount = state.store.transactions.filter((t) => t.categoryId === id).length;
-            const msg =
-              usedCount > 0
-                ? `"${cat.name}" is used by ${usedCount} transaction(s). Deleting it will show them as "Deleted Category".`
-                : `Delete category "${cat.name}"?`;
-
-            openConfirm(
-              'Delete Category?',
-              msg,
-              () => {
-                state.store.categories = state.store.categories.filter((c) => c.id !== id);
-                saveStore();
-                renderActiveView();
-                showToast(`Deleted "${cat.name}"`, 'info');
-              },
-              'Delete'
-            );
-          });
         });
       };
 
@@ -5031,6 +6050,7 @@ function doPost(e) {
           '<option value="all">All Accounts</option>' +
           state.store.accounts.map((a) => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join('');
         if (prevAcc === 'all' || getAccountById(prevAcc)) accSel.value = prevAcc;
+        syncGlassSelectTrigger('historyAccountFilter');
 
         const catSel = document.getElementById('historyCategoryFilter');
         const prevCat = catSel.value;
@@ -5038,6 +6058,7 @@ function doPost(e) {
           '<option value="all">All Categories</option>' +
           state.store.categories.map((c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
         if (prevCat === 'all' || getCategoryById(prevCat)) catSel.value = prevCat;
+        syncGlassSelectTrigger('historyCategoryFilter');
       };
 
       const renderHistoryPage = () => {
@@ -5262,8 +6283,8 @@ function doPost(e) {
         document.querySelectorAll('.theme-choice-btn').forEach((btn) => {
           const active = btn.dataset.themeChoice === mode;
           btn.className = active
-            ? 'theme-choice-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-sm'
-            : 'theme-choice-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900';
+            ? 'theme-choice-btn h-full px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-sm'
+            : 'theme-choice-btn h-full px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900';
         });
       };
 
@@ -5277,13 +6298,13 @@ function doPost(e) {
         if (isLocked) {
           badge.textContent = 'Enabled';
           badge.className = 'shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
-          desc.textContent = 'PIN is required every time Pocket Status opens';
+          if (desc) desc.textContent = 'PIN is required every time Pocket Status opens';
           offCtrl.classList.add('hidden');
           onCtrl.classList.remove('hidden');
         } else {
           badge.textContent = 'Off';
           badge.className = 'shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200';
-          desc.textContent = 'Require a 4-digit PIN each time you open the app';
+          if (desc) desc.textContent = 'Require a 4-digit PIN each time you open the app';
           offCtrl.classList.remove('hidden');
           onCtrl.classList.add('hidden');
         }
@@ -5318,7 +6339,7 @@ function doPost(e) {
         state.pinFlow.active = true;
         state.pinFlow.mode = mode;
         state.pinFlow.buffer = '';
-        if (mode !== 'setup-2') state.pinFlow.tempPin = '';
+        if (mode !== 'setup-2' && mode !== 'setup-ca-2') state.pinFlow.tempPin = '';
 
         const overlay = document.getElementById('pinLockOverlay');
         const titleEl = document.getElementById('pinOverlayTitle');
@@ -5352,6 +6373,26 @@ function doPost(e) {
             sub: 'Enter your current PIN to turn off lock',
             cancellable: true,
           },
+          'verify-current-asset': {
+            title: 'Current Asset',
+            sub: 'Enter Current Asset 4-digit PIN to open',
+            cancellable: true,
+          },
+          'verify-ca-change': {
+            title: 'Verify Current Asset PIN',
+            sub: 'Enter your current Current Asset PIN',
+            cancellable: true,
+          },
+          'setup-ca-1': {
+            title: 'Set Current Asset PIN',
+            sub: 'Choose a 4-digit PIN for Current Asset',
+            cancellable: true,
+          },
+          'setup-ca-2': {
+            title: 'Confirm Current Asset PIN',
+            sub: 'Re-enter your 4-digit PIN to confirm',
+            cancellable: true,
+          },
         };
 
         const cfg = copyMap[mode] || copyMap.unlock;
@@ -5367,6 +6408,7 @@ function doPost(e) {
         state.pinFlow.active = false;
         state.pinFlow.buffer = '';
         state.pinFlow.tempPin = '';
+        state.pinFlow.afterSetupOpenCurrentAssets = false;
         document.getElementById('pinErrorMsg').textContent = '';
         document.getElementById('pinLockOverlay').classList.add('hidden');
       };
@@ -5392,12 +6434,14 @@ function doPost(e) {
 
         if (mode === 'setup-2') {
           if (code === state.pinFlow.tempPin) {
+            const shouldOpenCa = Boolean(state.pinFlow.afterSetupOpenCurrentAssets);
             state.store.security.enabled = true;
             state.store.security.pin = code;
             saveStore(false);
             closePinOverlay();
             renderSecurityUI();
             showToast('4-digit PIN lock enabled', 'success');
+            if (shouldOpenCa) switchView('current-assets');
           } else {
             triggerPinError('PINs did not match. Try again.');
             setTimeout(() => {
@@ -5426,6 +6470,49 @@ function doPost(e) {
             showToast('App lock turned off', 'info');
           } else {
             triggerPinError('Incorrect PIN.');
+          }
+          return;
+        }
+
+        if (mode === 'verify-current-asset') {
+          if (code === state.store.security.currentAssetPin) {
+            closePinOverlay();
+            switchView('current-assets');
+          } else {
+            triggerPinError('Incorrect PIN. Try again.');
+          }
+          return;
+        }
+
+        if (mode === 'verify-ca-change') {
+          if (code === state.store.security.currentAssetPin) {
+            openPinOverlay('setup-ca-1');
+          } else {
+            triggerPinError('Incorrect Current Asset PIN.');
+          }
+          return;
+        }
+
+        if (mode === 'setup-ca-1') {
+          state.pinFlow.tempPin = code;
+          openPinOverlay('setup-ca-2');
+          return;
+        }
+
+        if (mode === 'setup-ca-2') {
+          if (code === state.pinFlow.tempPin) {
+            const shouldOpenCa = Boolean(state.pinFlow.afterSetupOpenCurrentAssets);
+            state.store.security.currentAssetPin = code;
+            saveStore(false);
+            closePinOverlay();
+            renderSettingsPage();
+            showToast('Current Asset PIN saved', 'success');
+            if (shouldOpenCa) switchView('current-assets');
+          } else {
+            triggerPinError('PINs did not match. Try again.');
+            setTimeout(() => {
+              if (state.pinFlow.active) openPinOverlay('setup-ca-1');
+            }, 650);
           }
         }
       };
@@ -5596,9 +6683,118 @@ function doPost(e) {
           `${state.store.accounts.length} accounts • ${state.store.categories.length} categories • ${state.store.transactions.length} entries (${monthTxs.length} in ${MONTH_SHORT[state.selectedMonth]}).`;
         document.getElementById('exportMonthCsvSub').textContent =
           `Export CSV (${MONTH_SHORT[state.selectedMonth]})`;
+        const hasCaPin = /^\d{4}$/.test(String(state.store.security.currentAssetPin || ''));
+        const caPinLabel = document.getElementById('changeCaPinLabel');
+        if (caPinLabel) {
+          caPinLabel.textContent = hasCaPin ? 'Change PIN' : 'Set PIN';
+        }
         renderThemeUI();
         renderSecurityUI();
         renderSyncUI();
+      };
+
+      const requestOpenCurrentAssets = () => {
+        if (/^\d{4}$/.test(String(state.store.security.currentAssetPin || ''))) {
+          openPinOverlay('verify-current-asset');
+        } else {
+          state.pinFlow.afterSetupOpenCurrentAssets = true;
+          openPinOverlay('setup-ca-1');
+          showToast('Set a 4-digit PIN for Current Asset', 'info');
+        }
+      };
+
+      const requestChangeCurrentAssetPin = () => {
+        state.pinFlow.afterSetupOpenCurrentAssets = false;
+        if (/^\d{4}$/.test(String(state.store.security.currentAssetPin || ''))) {
+          openPinOverlay('verify-ca-change');
+        } else {
+          openPinOverlay('setup-ca-1');
+        }
+      };
+
+      const renderCurrentAssetsPage = () => {
+        const items = state.store.currentAssets || [];
+        const total = items.reduce((s, item) => round2(s + (Number(item.balance) || 0)), 0);
+        const totalEl = document.getElementById('caTotalBalance');
+        if (totalEl) {
+          totalEl.textContent = formatINR(total);
+          totalEl.className = `text-xl font-extrabold tabular-nums mt-1 truncate ${getAccountBalanceColor(total, 'text-cyan-600', 'text-rose-600')}`;
+        }
+        const countEl = document.getElementById('caTotalCount');
+        if (countEl) {
+          countEl.textContent = `${items.length} account${items.length === 1 ? '' : 's'}`;
+        }
+
+        const listEl = document.getElementById('currentAssetsList');
+        if (!listEl) return;
+
+        if (items.length === 0) {
+          listEl.innerHTML = '<div class="rounded-2xl bg-white border border-slate-200 p-6 text-center text-xs text-slate-500">No Current Asset accounts yet. Tap "+ Add Account" to create one.</div>';
+          return;
+        }
+
+        listEl.innerHTML = items
+          .map((item) => {
+            const color = normalizeHex(item.color, '#06b6d4');
+            const bal = Number(item.balance) || 0;
+            return `
+              <div data-reorder-id="${escapeHtml(item.id)}" class="rounded-2xl bg-white border border-slate-200 hover:border-cyan-400 p-3.5 flex items-center justify-between gap-2.5 shadow-sm transition">
+                <div class="flex items-center gap-3 min-w-0">
+                  <button type="button" data-edit-ca="${escapeHtml(item.id)}" title="Edit or delete account" class="edit-ca-btn w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95" style="${getTintedBadgeStyle(color)}">
+                    ${getAccountSvg('saving', 'w-5 h-5')}
+                  </button>
+                  <div class="min-w-0">
+                    <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(item.name)}</p>
+                    ${item.note ? `<p class="text-[11px] text-slate-500 mt-0.5 truncate">${escapeHtml(item.note)}</p>` : ''}
+                  </div>
+                </div>
+                <p class="text-sm font-extrabold tabular-nums shrink-0 ${getAccountBalanceColor(bal, 'text-emerald-600', 'text-rose-600')}">${formatINR(bal)}</p>
+              </div>
+            `;
+          })
+          .join('');
+
+        listEl.querySelectorAll('.edit-ca-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openCurrentAssetModal(btn.dataset.editCa);
+          });
+        });
+      };
+
+      const openCurrentAssetModal = (editId = null) => {
+        document.getElementById('currentAssetForm').reset();
+        let initialColor = CURATED_SWATCHES[((state.store.currentAssets || []).length + 6) % CURATED_SWATCHES.length];
+
+        if (editId) {
+          const item = (state.store.currentAssets || []).find((x) => x.id === editId);
+          if (!item) return;
+          document.getElementById('caEditId').value = item.id;
+          document.getElementById('caModalTitle').textContent = 'Edit Current Asset Account';
+          document.getElementById('caNameInput').value = item.name;
+          document.getElementById('caBalanceInput').value = item.balance;
+          document.getElementById('caNoteInput').value = item.note || '';
+          initialColor = normalizeHex(item.color, '#06b6d4');
+        } else {
+          document.getElementById('caEditId').value = '';
+          document.getElementById('caModalTitle').textContent = 'Add Current Asset Account';
+          document.getElementById('caBalanceInput').value = 0;
+        }
+
+        renderColorPicker({
+          swatchesEl: document.getElementById('caColorSwatches'),
+          previewEl: document.getElementById('caIconPreview'),
+          hiddenInputEl: document.getElementById('caIconColor'),
+          hexLabelEl: document.getElementById('caColorHexLabel'),
+          iconSvg: getAccountSvg('saving', 'w-6 h-6'),
+          selectedColor: initialColor,
+        });
+
+        const delBtn = document.getElementById('deleteCaFromModalBtn');
+        if (delBtn) delBtn.classList.toggle('hidden', !editId);
+
+        document.getElementById('currentAssetModal').classList.remove('hidden');
+        setTimeout(() => document.getElementById('caNameInput').focus(), 60);
       };
 
       const buildBackupPayload = () => ({
@@ -5611,7 +6807,11 @@ function doPost(e) {
           transactions: state.store.transactions,
           plans: state.store.plans,
           emis: state.store.emis,
+          currentAssets: state.store.currentAssets,
           homeSlabOrder: state.store.homeSlabOrder,
+          accountTypeOrder: state.store.accountTypeOrder,
+          accountTypeLabels: state.store.accountTypeLabels,
+          customAccountTypes: state.store.customAccountTypes,
           includePrevMonthNetWorth: state.store.includePrevMonthNetWorth,
           includeEmiPrincipalInCcLimit: state.store.includeEmiPrincipalInCcLimit,
         },
@@ -6240,6 +7440,7 @@ function doPost(e) {
           }
         }
 
+        syncGlassSelectTrigger('txAccount');
         if (state.txModalType === 'correction') {
           updateCorrectionHelper();
           applyCorrectionSignUI(state.txCorrectionSign);
@@ -6257,8 +7458,8 @@ function doPost(e) {
         if (typeFilterSel) {
           typeFilterSel.innerHTML =
             '<option value="all">All Types</option>' +
-            Object.entries(ACCOUNT_TYPES)
-              .map(([key, meta]) => `<option value="${escapeHtml(key)}">${escapeHtml(meta.label)}</option>`)
+            getAccountTypeOrder()
+              .map((key) => `<option value="${escapeHtml(key)}">${escapeHtml(getAccountTypeMeta(key).label)}</option>`)
               .join('');
           typeFilterSel.value = 'all';
         }
@@ -6300,7 +7501,7 @@ function doPost(e) {
         const acc = getAccountById(accId);
         if (acc && acc.type === 'credit_card') {
           helperEl.textContent = '+ Increase adds to Credit Card outstanding; − Decrease reduces Credit Card outstanding.';
-        } else if (acc && acc.type === 'due_to_others') {
+        } else if (acc && isNonCardLiabilityType(acc.type)) {
           helperEl.textContent = '+ Increase adds to amount you owe (Due To Others); − Decrease reduces amount you owe.';
         } else {
           const seg = acc ? getAccountTypeMeta(acc.type).shortLabel : 'Account';
@@ -6427,6 +7628,7 @@ function doPost(e) {
           }
         }
 
+        syncAllGlassControls();
         document.getElementById('txModal').classList.remove('hidden');
         setTimeout(() => document.getElementById('txAmount').focus(), 60);
       };
@@ -6447,8 +7649,19 @@ function doPost(e) {
         document.getElementById('accLimitField').classList.toggle('hidden', !isCreditCardType(type));
       };
 
+      const populateAccountTypeSelectOptions = () => {
+        const typeSel = document.getElementById('accType');
+        if (!typeSel) return;
+        const prev = typeSel.value;
+        typeSel.innerHTML = getAccountTypeOrder()
+          .map((key) => `<option value="${escapeHtml(key)}">${escapeHtml(getAccountTypeMeta(key).label)}</option>`)
+          .join('');
+        if (prev && isValidAccountType(prev)) typeSel.value = prev;
+      };
+
       const openAccountModal = (editId = null, defaultType = 'saving') => {
         document.getElementById('accountForm').reset();
+        populateAccountTypeSelectOptions();
         const typeSel = document.getElementById('accType');
         const monthKey = getSelectedMonthKey();
         document.getElementById('accOpeningLabel').textContent =
@@ -6461,7 +7674,7 @@ function doPost(e) {
           document.getElementById('accEditId').value = acc.id;
           document.getElementById('accountModalTitle').textContent = `Edit ${meta.label}`;
           typeSel.value = acc.type;
-          typeSel.disabled = true;
+          typeSel.disabled = false;
           document.getElementById('accName').value = acc.name;
           document.getElementById('accOpeningBalance').value = getAccountOpeningForMonth(acc, monthKey);
           document.getElementById('accCreditLimit').value = acc.creditLimit || 50000;
@@ -6484,6 +7697,10 @@ function doPost(e) {
           refreshAccountColorPicker(defaultType, meta.defaultColor);
         }
 
+        const delAccModalBtn = document.getElementById('deleteAccFromModalBtn');
+        if (delAccModalBtn) delAccModalBtn.classList.toggle('hidden', !editId);
+
+        syncAllGlassControls();
         document.getElementById('accountModal').classList.remove('hidden');
         setTimeout(() => document.getElementById('accName').focus(), 60);
       };
@@ -6568,12 +7785,15 @@ function doPost(e) {
         });
         renderCategoryIconPicker(initialIcon);
 
+        const delCatModalBtn = document.getElementById('deleteCatFromModalBtn');
+        if (delCatModalBtn) delCatModalBtn.classList.toggle('hidden', !editId);
+
         document.getElementById('categoryModal').classList.remove('hidden');
         setTimeout(() => document.getElementById('catNameInput').focus(), 60);
       };
 
       const closeAllModals = () => {
-        ['txModal', 'accountModal', 'categoryModal', 'confirmModal', 'emiModal', 'emiScheduleModal', 'planningEntryModal', 'planningEditModal', 'vaultPassModal'].forEach((id) => {
+        ['glassSelectOverlay', 'glassCalendarOverlay', 'accountTypesModal', 'txModal', 'accountModal', 'categoryModal', 'confirmModal', 'emiModal', 'emiScheduleModal', 'planningEntryModal', 'planningEditModal', 'vaultPassModal', 'currentAssetModal'].forEach((id) => {
           const el = document.getElementById(id);
           if (el) el.classList.add('hidden');
         });
@@ -6731,7 +7951,15 @@ function doPost(e) {
             }
             return;
           }
-          if (e.key === 'Escape') closeAllModals();
+          if (e.key === 'Escape') {
+            const gSel = document.getElementById('glassSelectOverlay');
+            const gCal = document.getElementById('glassCalendarOverlay');
+            if (gSel && !gSel.classList.contains('hidden')) { gSel.classList.add('hidden'); return; }
+            if (gCal && !gCal.classList.contains('hidden')) { gCal.classList.add('hidden'); return; }
+            const gTypes = document.getElementById('accountTypesModal');
+            if (gTypes && !gTypes.classList.contains('hidden')) { gTypes.classList.add('hidden'); return; }
+            closeAllModals();
+          }
         });
 
         if (systemDarkMedia) {
@@ -6763,6 +7991,82 @@ function doPost(e) {
           if (state.store.security.enabled && /^\d{4}$/.test(state.store.security.pin)) {
             openPinOverlay('unlock');
           }
+        });
+
+        // Settings: Current Asset Vault Buttons & Page Controls
+        document.getElementById('openCurrentAssetBtn').addEventListener('click', () => {
+          requestOpenCurrentAssets();
+        });
+        document.getElementById('changeCaPinBtn').addEventListener('click', () => {
+          requestChangeCurrentAssetPin();
+        });
+        document.getElementById('caClosePageBtn').addEventListener('click', () => {
+          switchView('settings');
+        });
+        document.getElementById('caAddAccountBtn').addEventListener('click', () => {
+          openCurrentAssetModal(null);
+        });
+        document.getElementById('closeCaModalBtn').addEventListener('click', () => {
+          document.getElementById('currentAssetModal').classList.add('hidden');
+        });
+        document.getElementById('currentAssetModal').addEventListener('click', (e) => {
+          if (e.target.id === 'currentAssetModal') e.target.classList.add('hidden');
+        });
+        document.getElementById('deleteCaFromModalBtn').addEventListener('click', () => {
+          const id = document.getElementById('caEditId').value;
+          const item = (state.store.currentAssets || []).find((x) => x.id === id);
+          if (!item) return;
+          document.getElementById('currentAssetModal').classList.add('hidden');
+          openConfirm(
+            'Delete Account?',
+            `Delete "${item.name}" from Current Asset?`,
+            () => {
+              state.store.currentAssets = (state.store.currentAssets || []).filter((x) => x.id !== id);
+              saveStore();
+              renderActiveView();
+              showToast('Account deleted', 'info');
+            },
+            'Delete'
+          );
+        });
+        document.getElementById('currentAssetForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const editId = document.getElementById('caEditId').value;
+          const name = document.getElementById('caNameInput').value.trim();
+          const parsedBal = Number.parseFloat(document.getElementById('caBalanceInput').value);
+          const balance = Number.isFinite(parsedBal) ? round2(parsedBal) : 0;
+          const color = normalizeHex(document.getElementById('caIconColor').value, '#06b6d4');
+          const note = document.getElementById('caNoteInput').value.trim();
+
+          if (!name) {
+            showToast('Enter an account name', 'error');
+            return;
+          }
+          if (!Array.isArray(state.store.currentAssets)) state.store.currentAssets = [];
+
+          if (editId) {
+            const item = state.store.currentAssets.find((x) => x.id === editId);
+            if (item) {
+              item.name = name;
+              item.balance = balance;
+              item.color = color;
+              item.note = note;
+            }
+            showToast('Account updated', 'success');
+          } else {
+            state.store.currentAssets.push({
+              id: `ca-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              name,
+              balance,
+              color,
+              note,
+            });
+            showToast('Account added to Current Asset', 'success');
+          }
+
+          saveStore();
+          document.getElementById('currentAssetModal').classList.add('hidden');
+          renderActiveView();
         });
 
         document.querySelectorAll('[data-pin-digit]').forEach((btn) => {
@@ -7194,6 +8498,7 @@ function doPost(e) {
             .map((c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`)
             .join('');
           catSel.value = targetId;
+          syncGlassSelectTrigger('txCategory');
 
           input.value = '';
           document.getElementById('quickCatBox').classList.add('hidden');
@@ -7308,6 +8613,23 @@ function doPost(e) {
         document.getElementById('closeAccountModalBtn').addEventListener('click', () => {
           document.getElementById('accountModal').classList.add('hidden');
         });
+        document.getElementById('deleteAccFromModalBtn').addEventListener('click', () => {
+          const id = document.getElementById('accEditId').value;
+          const acc = getAccountById(id);
+          if (!acc) return;
+          document.getElementById('accountModal').classList.add('hidden');
+          openConfirm(
+            'Delete Account?',
+            `Delete "${acc.name}"? Existing transactions will be kept and shown as "Deleted Account".`,
+            () => {
+              state.store.accounts = state.store.accounts.filter((a) => a.id !== id);
+              saveStore();
+              renderActiveView();
+              showToast('Account deleted', 'info');
+            },
+            'Delete'
+          );
+        });
         document.getElementById('accountModal').addEventListener('click', (e) => {
           if (e.target.id === 'accountModal') document.getElementById('accountModal').classList.add('hidden');
         });
@@ -7346,12 +8668,18 @@ function doPost(e) {
             const acc = getAccountById(editId);
             if (acc) {
               acc.name = name;
+              acc.type = type;
               acc.color = color;
-              if (!isCreditCardType(acc.type)) setAccountOpeningForMonth(acc, monthKey, openingBalance);
-              if (acc.type === 'credit_card') {
+              if (!isCreditCardType(type)) {
+                setAccountOpeningForMonth(acc, monthKey, openingBalance);
+                acc.creditLimit = 0;
+                acc.billingDate = null;
+                acc.dueDate = null;
+              } else {
                 acc.creditLimit = creditLimit;
                 acc.billingDate = billingDate;
                 acc.dueDate = dueDate;
+                acc.openingBalances = {};
               }
             }
             showToast('Account updated', 'success');
@@ -7381,6 +8709,33 @@ function doPost(e) {
         // Category Modal
         document.getElementById('closeCatModalBtn').addEventListener('click', () => {
           document.getElementById('categoryModal').classList.add('hidden');
+        });
+        document.getElementById('deleteCatFromModalBtn').addEventListener('click', () => {
+          const id = document.getElementById('catEditId').value;
+          const cat = getCategoryById(id);
+          if (!cat) return;
+          if (state.store.categories.length <= 1) {
+            showToast('Keep at least one category', 'error');
+            return;
+          }
+          const usedCount = state.store.transactions.filter((t) => t.categoryId === id).length;
+          const msg =
+            usedCount > 0
+              ? `"${cat.name}" is used by ${usedCount} transaction(s). Deleting it will show them as "Deleted Category".`
+              : `Delete category "${cat.name}"?`;
+
+          document.getElementById('categoryModal').classList.add('hidden');
+          openConfirm(
+            'Delete Category?',
+            msg,
+            () => {
+              state.store.categories = state.store.categories.filter((c) => c.id !== id);
+              saveStore();
+              renderActiveView();
+              showToast(`Deleted "${cat.name}"`, 'info');
+            },
+            'Delete'
+          );
         });
         document.getElementById('categoryModal').addEventListener('click', (e) => {
           if (e.target.id === 'categoryModal') document.getElementById('categoryModal').classList.add('hidden');
@@ -7586,6 +8941,7 @@ function doPost(e) {
           { id: 'categoriesListContainer', kind: 'categories' },
           { id: 'emiList', kind: 'emis' },
           { id: 'planningList', kind: 'plans' },
+          { id: 'currentAssetsList', kind: 'currentAssets' },
         ];
 
         const drag = {
@@ -7656,6 +9012,10 @@ function doPost(e) {
             const byId = new Map(state.store.plans.map((p) => [p.id, p]));
             const ordered = slabs.map((el) => byId.get(el.dataset.reorderId)).filter(Boolean);
             if (ordered.length === state.store.plans.length) state.store.plans = ordered;
+          } else if (config.kind === 'currentAssets') {
+            const byId = new Map((state.store.currentAssets || []).map((c) => [c.id, c]));
+            const ordered = slabs.map((el) => byId.get(el.dataset.reorderId)).filter(Boolean);
+            if (ordered.length === (state.store.currentAssets || []).length) state.store.currentAssets = ordered;
           }
           saveStore();
         };
@@ -7790,6 +9150,784 @@ function doPost(e) {
         );
       };
 
+
+      // =======================================================================
+      // 17C. GLASS-TRANSPARENT CALENDARS, SELECTION SLABS & ACCOUNT TYPES EDITOR
+      // =======================================================================
+      const GLASS_SELECT_CONFIG = {
+        txAccountTypeFilter: {
+          title: 'Account Type',
+          accent: 'emerald',
+          kind: 'accountType',
+          heightClass: 'min-h-[38px]',
+          textClass: 'text-xs font-semibold',
+        },
+        txAccount: {
+          title: 'Account Name',
+          accent: 'emerald',
+          kind: 'accountName',
+          heightClass: 'min-h-[38px]',
+          textClass: 'text-xs font-semibold',
+        },
+        txFromAccount: {
+          title: 'From Account',
+          accent: 'indigo',
+          kind: 'accountName',
+          heightClass: 'min-h-[38px]',
+          textClass: 'text-xs font-semibold',
+        },
+        txToAccount: {
+          title: 'To Account',
+          accent: 'indigo',
+          kind: 'accountName',
+          heightClass: 'min-h-[38px]',
+          textClass: 'text-xs font-semibold',
+        },
+        txCategory: {
+          title: 'Select Category',
+          accent: 'emerald',
+          kind: 'category',
+          heightClass: 'min-h-[38px]',
+          textClass: 'text-xs font-semibold',
+        },
+        accType: {
+          title: 'Account Type',
+          accent: 'emerald',
+          kind: 'accountType',
+          heightClass: 'min-h-[40px]',
+          textClass: 'text-xs sm:text-sm font-semibold',
+        },
+        emiCardSelect: {
+          title: 'Related Credit Card',
+          accent: 'cyan',
+          kind: 'accountName',
+          heightClass: 'min-h-[36px]',
+          textClass: 'text-xs font-semibold',
+        },
+        historyAccountFilter: {
+          title: 'Filter by Account',
+          accent: 'emerald',
+          kind: 'accountName',
+          heightClass: 'min-h-[36px]',
+          textClass: 'text-xs font-semibold',
+        },
+        historyCategoryFilter: {
+          title: 'Filter by Category',
+          accent: 'emerald',
+          kind: 'category',
+          heightClass: 'min-h-[36px]',
+          textClass: 'text-xs font-semibold',
+        },
+        planningEntryCategory: {
+          title: 'Select Category',
+          accent: 'violet',
+          kind: 'category',
+          heightClass: 'min-h-[38px]',
+          textClass: 'text-xs font-semibold',
+        },
+      };
+
+      const GLASS_DATE_CONFIG = {
+        txDate: {
+          title: 'Select Transaction Date',
+          accent: 'emerald',
+          heightClass: 'h-[46px]',
+        },
+        emiDateInput: {
+          title: 'Select 1st EMI Date',
+          accent: 'cyan',
+          heightClass: 'h-[38px]',
+        },
+      };
+
+      const glassSelectTriggers = {};
+      const glassDateTriggers = {};
+
+      const getAccentHex = (accent) =>
+        accent === 'indigo' ? '#6366f1' : accent === 'cyan' ? '#06b6d4' : accent === 'violet' ? '#8b5cf6' : '#10b981';
+
+      const getGlassOptionVisual = (kind, value) => {
+        if (kind === 'category') {
+          if (!value || value === 'all') {
+            return {
+              color: '#10b981',
+              svg: getCategorySvg('w-3.5 h-3.5', 'tag'),
+              sub: 'Show all categories',
+            };
+          }
+          const cat = getCategoryById(value);
+          if (cat) {
+            return {
+              color: normalizeHex(cat.color, '#10b981'),
+              svg: getCategorySvg('w-3.5 h-3.5', cat.icon || 'tag'),
+              sub: '',
+            };
+          }
+          return {
+            color: '#64748b',
+            svg: getCategorySvg('w-3.5 h-3.5', 'tag'),
+            sub: '',
+          };
+        }
+
+        if (kind === 'accountType') {
+          if (!value || value === 'all') {
+            return {
+              color: '#10b981',
+              svg: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>`,
+              sub: 'Show all account types',
+            };
+          }
+          const meta = getAccountTypeMeta(value);
+          return {
+            color: meta.defaultColor,
+            svg: getAccountSvg(value, 'w-3.5 h-3.5'),
+            sub: value === 'credit_card' ? 'Credit limit & billing' : isLiabilityType(value) ? 'Liability account' : 'Asset account',
+          };
+        }
+
+        if (!value || value === 'all') {
+          return {
+            color: '#64748b',
+            svg: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M4 10V8l8-4 8 4v2M5 10v8m4-8v8m6-8v8m4-8v8M3 18h18" /></svg>`,
+            sub: value === 'all' ? 'All accounts' : 'Optional / unlinked',
+          };
+        }
+
+        const acc = getAccountById(value);
+        if (acc) {
+          const meta = getAccountTypeMeta(acc.type);
+          return {
+            color: normalizeHex(acc.color, meta.defaultColor),
+            svg: getAccountSvg(acc.type, 'w-3.5 h-3.5'),
+            sub: meta.label,
+          };
+        }
+        return {
+          color: '#06b6d4',
+          svg: getAccountSvg('credit_card', 'w-3.5 h-3.5'),
+          sub: 'Saved account',
+        };
+      };
+
+      const syncGlassSelectTrigger = (selectId) => {
+        const sel = document.getElementById(selectId);
+        const btn = glassSelectTriggers[selectId];
+        const cfg = GLASS_SELECT_CONFIG[selectId];
+        if (!sel || !btn || !cfg) return;
+
+        const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
+        const labelText = selectedOpt ? selectedOpt.textContent : 'Select...';
+        const val = selectedOpt ? selectedOpt.value : '';
+        const vis = getGlassOptionVisual(cfg.kind, val);
+
+        btn.disabled = Boolean(sel.disabled);
+        const badgeEl = btn.querySelector('.glass-trigger-badge');
+        const labelEl = btn.querySelector('.glass-trigger-label');
+        if (badgeEl) {
+          badgeEl.setAttribute('style', getTintedBadgeStyle(vis.color));
+          badgeEl.innerHTML = vis.svg;
+        }
+        if (labelEl) {
+          labelEl.textContent = labelText;
+        }
+      };
+
+      const openGlassSelectSlab = (selectId) => {
+        const sel = document.getElementById(selectId);
+        const cfg = GLASS_SELECT_CONFIG[selectId];
+        if (!sel || !cfg || sel.disabled) return;
+
+        const overlay = document.getElementById('glassSelectOverlay');
+        const titleEl = document.getElementById('glassSelectTitle');
+        const headerIconEl = document.getElementById('glassSelectHeaderIcon');
+        const listEl = document.getElementById('glassSelectList');
+        const accentHex = getAccentHex(cfg.accent);
+
+        titleEl.textContent = cfg.title;
+        headerIconEl.setAttribute('style', getTintedBadgeStyle(accentHex));
+        headerIconEl.innerHTML =
+          cfg.kind === 'category'
+            ? getCategorySvg('w-3.5 h-3.5', 'tag')
+            : cfg.kind === 'accountType'
+            ? `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h14" /></svg>`
+            : getAccountSvg(selectId === 'emiCardSelect' ? 'credit_card' : 'saving', 'w-3.5 h-3.5');
+
+        const currentVal = sel.value;
+        // Sort all options alphabetically by name (keeping sentinel 'all'/'' first)
+        const rawOptions = Array.from(sel.options);
+        const pinnedOpts = rawOptions.filter((o) => o.value === 'all' || o.value === '');
+        const sortedOpts = rawOptions
+          .filter((o) => o.value !== 'all' && o.value !== '')
+          .sort((a, b) => a.textContent.trim().localeCompare(b.textContent.trim(), undefined, { sensitivity: 'base', numeric: true }));
+        const options = [...pinnedOpts, ...sortedOpts];
+
+        if (options.length === 0) {
+          listEl.innerHTML = `<div class="py-5 text-center text-xs opacity-65">No options available</div>`;
+        } else {
+          listEl.innerHTML = options
+            .map((opt) => {
+              const isSelected = opt.value === currentVal;
+              const vis = getGlassOptionVisual(cfg.kind, opt.value);
+              const selectedCls = isSelected ? `is-selected-${cfg.accent}` : '';
+              return `
+                <button type="button" data-glass-opt-val="${escapeHtml(opt.value)}" class="glass-picker-option ${selectedCls}">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border" style="${getTintedBadgeStyle(vis.color)}">
+                      ${vis.svg}
+                    </span>
+                    <div class="min-w-0">
+                      <p class="text-xs font-bold truncate">${escapeHtml(opt.textContent)}</p>
+                      ${vis.sub ? `<p class="text-[10px] opacity-65 truncate">${escapeHtml(vis.sub)}</p>` : ''}
+                    </div>
+                  </div>
+                  ${
+                    isSelected
+                      ? `<span class="w-4 h-4 rounded-full flex items-center justify-center shrink-0 text-white" style="background-color: ${accentHex};">
+                           <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                         </span>`
+                      : `<span class="w-3.5 h-3.5 rounded-full border border-slate-400/40 shrink-0"></span>`
+                  }
+                </button>
+              `;
+            })
+            .join('');
+
+          listEl.querySelectorAll('[data-glass-opt-val]').forEach((optBtn) => {
+            optBtn.addEventListener('click', () => {
+              const nextVal = optBtn.dataset.glassOptVal;
+              sel.value = nextVal;
+              sel.dispatchEvent(new Event('change', { bubbles: true }));
+              syncGlassSelectTrigger(selectId);
+              overlay.classList.add('hidden');
+            });
+          });
+        }
+
+        overlay.classList.remove('hidden');
+      };
+
+      const syncGlassDateTrigger = (inputId) => {
+        const inp = document.getElementById(inputId);
+        const btn = glassDateTriggers[inputId];
+        if (!inp || !btn) return;
+        const labelEl = btn.querySelector('.glass-date-label');
+        if (!labelEl) return;
+        labelEl.textContent = inp.value ? formatDisplayDate(inp.value) : 'Select date';
+      };
+
+      const glassCalState = {
+        mode: 'day', // 'day' | 'month' | 'headerMonth'
+        targetInputId: null,
+        accent: 'emerald',
+        viewYear: todayInit.year,
+        viewMonth: todayInit.monthIndex,
+        selectedISO: todayInit.iso,
+      };
+
+      const renderGlassCalendar = () => {
+        const overlay = document.getElementById('glassCalendarOverlay');
+        const headerIconEl = document.getElementById('glassCalHeaderIcon');
+        const navLabelEl = document.getElementById('glassCalNavLabel');
+        const dayViewEl = document.getElementById('glassCalDayView');
+        const monthViewEl = document.getElementById('glassCalMonthView');
+        const daysGridEl = document.getElementById('glassCalDaysGrid');
+        const todayBtn = document.getElementById('glassCalTodayBtn');
+
+        const accent = glassCalState.accent;
+        const accentHex = getAccentHex(accent);
+        headerIconEl.setAttribute('style', getTintedBadgeStyle(accentHex));
+        todayBtn.setAttribute('style', getTintedBadgeStyle(accentHex));
+        todayBtn.textContent = glassCalState.mode === 'headerMonth' ? 'This Month' : 'Today';
+
+        const today = getTodayParts();
+
+        if (glassCalState.mode === 'day') {
+          dayViewEl.classList.remove('hidden');
+          monthViewEl.classList.add('hidden');
+          navLabelEl.textContent = `${MONTH_FULL[glassCalState.viewMonth]} ${glassCalState.viewYear}`;
+
+          const firstWeekday = new Date(glassCalState.viewYear, glassCalState.viewMonth, 1).getDay();
+          const daysInCurrent = getDaysInMonth(glassCalState.viewYear, glassCalState.viewMonth);
+          const prevMonthIdx = glassCalState.viewMonth === 0 ? 11 : glassCalState.viewMonth - 1;
+          const prevMonthYear = glassCalState.viewMonth === 0 ? glassCalState.viewYear - 1 : glassCalState.viewYear;
+          const daysInPrev = getDaysInMonth(prevMonthYear, prevMonthIdx);
+          const nextMonthIdx = glassCalState.viewMonth === 11 ? 0 : glassCalState.viewMonth + 1;
+          const nextMonthYear = glassCalState.viewMonth === 11 ? glassCalState.viewYear + 1 : glassCalState.viewYear;
+
+          const cells = [];
+          for (let i = firstWeekday - 1; i >= 0; i--) {
+            const d = daysInPrev - i;
+            const iso = `${prevMonthYear}-${pad2(prevMonthIdx + 1)}-${pad2(d)}`;
+            cells.push({ day: d, iso, outside: true });
+          }
+          for (let d = 1; d <= daysInCurrent; d++) {
+            const iso = `${glassCalState.viewYear}-${pad2(glassCalState.viewMonth + 1)}-${pad2(d)}`;
+            cells.push({ day: d, iso, outside: false });
+          }
+          const trailing = (7 - (cells.length % 7)) % 7;
+          for (let d = 1; d <= trailing; d++) {
+            const iso = `${nextMonthYear}-${pad2(nextMonthIdx + 1)}-${pad2(d)}`;
+            cells.push({ day: d, iso, outside: true });
+          }
+
+          daysGridEl.innerHTML = cells
+            .map((c) => {
+              const isSelected = c.iso === glassCalState.selectedISO;
+              const isToday = c.iso === today.iso;
+              const cls = [
+                'glass-cal-cell',
+                c.outside ? 'is-outside' : '',
+                isSelected ? `is-selected-${accent}` : isToday ? `is-today-${accent}` : '',
+              ]
+                .filter(Boolean)
+                .join(' ');
+              return `<button type="button" data-cal-iso="${c.iso}" class="${cls}">${c.day}</button>`;
+            })
+            .join('');
+
+          daysGridEl.querySelectorAll('[data-cal-iso]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const iso = btn.dataset.calIso;
+              if (glassCalState.targetInputId) {
+                const inp = document.getElementById(glassCalState.targetInputId);
+                if (inp) {
+                  inp.value = iso;
+                  inp.dispatchEvent(new Event('input', { bubbles: true }));
+                  inp.dispatchEvent(new Event('change', { bubbles: true }));
+                  syncGlassDateTrigger(glassCalState.targetInputId);
+                }
+              }
+              overlay.classList.add('hidden');
+            });
+          });
+        } else {
+          dayViewEl.classList.add('hidden');
+          monthViewEl.classList.remove('hidden');
+          navLabelEl.textContent = String(glassCalState.viewYear);
+
+          const activeMonth = glassCalState.mode === 'headerMonth' ? state.selectedMonth : glassCalState.viewMonth;
+          const activeYear = glassCalState.mode === 'headerMonth' ? state.selectedYear : glassCalState.viewYear;
+
+          monthViewEl.innerHTML = MONTH_SHORT.map((mName, mIdx) => {
+            const isSelected = glassCalState.viewYear === activeYear && mIdx === activeMonth;
+            const isThisMonth = glassCalState.viewYear === today.year && mIdx === today.monthIndex;
+            const cls = [
+              'glass-month-cell',
+              isSelected ? `is-selected-${accent}` : isThisMonth ? `is-today-${accent}` : '',
+            ]
+              .filter(Boolean)
+              .join(' ');
+            return `<button type="button" data-cal-month="${mIdx}" class="${cls}">${mName}</button>`;
+          }).join('');
+
+          monthViewEl.querySelectorAll('[data-cal-month]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const mIdx = parseInt(btn.dataset.calMonth, 10);
+              if (glassCalState.mode === 'headerMonth') {
+                state.selectedYear = glassCalState.viewYear;
+                state.selectedMonth = mIdx;
+                overlay.classList.add('hidden');
+                renderActiveView();
+              } else {
+                glassCalState.viewMonth = mIdx;
+                glassCalState.mode = 'day';
+                renderGlassCalendar();
+              }
+            });
+          });
+        }
+      };
+
+      const openGlassCalendarForInput = (inputId) => {
+        const inp = document.getElementById(inputId);
+        const cfg = GLASS_DATE_CONFIG[inputId];
+        if (!inp || !cfg) return;
+
+        const iso = inp.value || getTodayParts().iso;
+        const parts = iso.split('-').map(Number);
+        const today = getTodayParts();
+
+        glassCalState.mode = 'day';
+        glassCalState.targetInputId = inputId;
+        glassCalState.accent = cfg.accent;
+        glassCalState.selectedISO = iso;
+        glassCalState.viewYear = parts.length === 3 && !isNaN(parts[0]) ? parts[0] : today.year;
+        glassCalState.viewMonth = parts.length === 3 && !isNaN(parts[1]) ? parts[1] - 1 : today.monthIndex;
+
+        document.getElementById('glassCalTitle').textContent = cfg.title;
+        renderGlassCalendar();
+        document.getElementById('glassCalendarOverlay').classList.remove('hidden');
+      };
+
+      const openGlassHeaderMonthPicker = () => {
+        glassCalState.mode = 'headerMonth';
+        glassCalState.targetInputId = null;
+        glassCalState.accent = 'emerald';
+        glassCalState.viewYear = state.selectedYear;
+        glassCalState.viewMonth = state.selectedMonth;
+
+        document.getElementById('glassCalTitle').textContent = 'Select Month & Year';
+        renderGlassCalendar();
+        document.getElementById('glassCalendarOverlay').classList.remove('hidden');
+      };
+
+      // --- Edit & Add Account Types Glass Slab (no reordering here; use page Reorder button) ---
+      let draftAccountTypeLabels = {};
+      let draftCustomTypes = [];
+      let newAccTypeKind = 'asset';
+
+      const applyNewAccTypeKindUI = (kind) => {
+        newAccTypeKind = kind === 'liability' ? 'liability' : 'asset';
+        document.querySelectorAll('.new-acc-type-kind-btn').forEach((btn) => {
+          const active = btn.dataset.newTypeKind === newAccTypeKind;
+          if (active) {
+            btn.className = newAccTypeKind === 'liability'
+              ? 'new-acc-type-kind-btn py-1 px-2 rounded-lg text-[11px] font-bold border transition bg-rose-500 text-white border-rose-500'
+              : 'new-acc-type-kind-btn py-1 px-2 rounded-lg text-[11px] font-bold border transition bg-emerald-600 text-white border-emerald-600';
+          } else {
+            btn.className = 'new-acc-type-kind-btn py-1 px-2 rounded-lg text-[11px] font-bold border transition glass-picker-option !justify-center !py-1';
+          }
+        });
+      };
+
+      const renderAccountTypesEditorList = () => {
+        const listEl = document.getElementById('accountTypesEditorList');
+        if (!listEl) return;
+
+        const allEntries = [
+          ...DEFAULT_ACCOUNT_TYPE_ORDER.map((k) => ({
+            key: k,
+            label: draftAccountTypeLabels[k] !== undefined ? draftAccountTypeLabels[k] : ACCOUNT_TYPES[k].label,
+            placeholder: ACCOUNT_TYPES[k].label,
+            color: ACCOUNT_TYPES[k].defaultColor,
+            isCustom: false,
+            kind: isLiabilityType(k) ? 'liability' : 'asset',
+          })),
+          ...draftCustomTypes.map((ct) => ({
+            key: ct.key,
+            label: ct.label,
+            placeholder: 'Custom Type',
+            color: ct.color,
+            isCustom: true,
+            kind: ct.kind,
+          })),
+        ].sort((a, b) => a.label.trim().localeCompare(b.label.trim(), undefined, { sensitivity: 'base', numeric: true }));
+
+        listEl.innerHTML = allEntries
+          .map((item) => {
+            const badgeText = item.key === 'credit_card' ? 'Card' : item.kind === 'liability' ? 'Liability' : 'Asset';
+            const badgeCls = item.kind === 'liability'
+              ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30'
+              : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30';
+            return `
+              <div class="glass-picker-option !cursor-default !py-1.5 !px-2">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border" style="${getTintedBadgeStyle(item.color)}">
+                  ${getAccountSvg(item.key, 'w-3.5 h-3.5')}
+                </span>
+                <input
+                  type="text"
+                  maxlength="32"
+                  data-edit-type-key="${escapeHtml(item.key)}"
+                  data-edit-is-custom="${item.isCustom ? '1' : '0'}"
+                  value="${escapeHtml(item.label)}"
+                  placeholder="${escapeHtml(item.placeholder)}"
+                  class="glass-inline-input flex-1"
+                />
+                <span class="px-1.5 py-0.5 rounded-md border text-[9px] font-bold shrink-0 ${badgeCls}">${badgeText}</span>
+                ${
+                  item.isCustom
+                    ? `<button type="button" data-del-custom-type="${escapeHtml(item.key)}" class="glass-icon-btn !w-6 !h-6 hover:!text-rose-600 shrink-0" aria-label="Delete account type" title="Delete account type">${getBinSvg('w-3 h-3')}</button>`
+                    : ''
+                }
+              </div>
+            `;
+          })
+          .join('');
+
+        listEl.querySelectorAll('[data-edit-type-key]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const key = e.target.dataset.editTypeKey;
+            if (e.target.dataset.editIsCustom === '1') {
+              const ct = draftCustomTypes.find((t) => t.key === key);
+              if (ct) ct.label = e.target.value;
+            } else {
+              draftAccountTypeLabels[key] = e.target.value;
+            }
+          });
+        });
+
+        listEl.querySelectorAll('[data-del-custom-type]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.delCustomType;
+            const usedCount = state.store.accounts.filter((a) => a.type === key).length;
+            if (usedCount > 0) {
+              showToast(`Cannot delete: ${usedCount} account(s) use this type`, 'error');
+              return;
+            }
+            draftCustomTypes = draftCustomTypes.filter((t) => t.key !== key);
+            renderAccountTypesEditorList();
+          });
+        });
+      };
+
+      const openAccountTypesModal = () => {
+        draftAccountTypeLabels = {};
+        DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
+          draftAccountTypeLabels[k] = getAccountTypeMeta(k).label;
+        });
+        draftCustomTypes = getCustomAccountTypes().map((t) => ({ ...t }));
+        const nameInp = document.getElementById('newAccTypeNameInput');
+        if (nameInp) nameInp.value = '';
+        applyNewAccTypeKindUI('asset');
+        renderAccountTypesEditorList();
+        document.getElementById('accountTypesModal').classList.remove('hidden');
+      };
+
+      const syncAllGlassControls = () => {
+        Object.keys(GLASS_SELECT_CONFIG).forEach(syncGlassSelectTrigger);
+        Object.keys(GLASS_DATE_CONFIG).forEach(syncGlassDateTrigger);
+      };
+
+      const initGlassControls = () => {
+        // 1. Enhance Account Type, Account Name & Category <select> controls
+        Object.entries(GLASS_SELECT_CONFIG).forEach(([selectId, cfg]) => {
+          const sel = document.getElementById(selectId);
+          if (!sel || glassSelectTriggers[selectId]) return;
+
+          const wrap = document.createElement('div');
+          wrap.className = 'glass-control-wrap';
+          sel.parentNode.insertBefore(wrap, sel);
+          wrap.appendChild(sel);
+          sel.classList.add('glass-native-hidden');
+          sel.setAttribute('tabindex', '-1');
+          sel.setAttribute('aria-hidden', 'true');
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `glass-trigger-btn glass-accent-${cfg.accent} ${cfg.heightClass}`;
+          btn.innerHTML = `
+            <span class="flex items-center gap-1.5 min-w-0 flex-1">
+              <span class="glass-trigger-badge w-5 h-5 rounded-md flex items-center justify-center shrink-0 border"></span>
+              <span class="glass-trigger-label ${cfg.textClass} truncate">Select...</span>
+            </span>
+            <svg class="w-3 h-3 opacity-60 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          `;
+          btn.addEventListener('click', () => openGlassSelectSlab(selectId));
+          wrap.appendChild(btn);
+          glassSelectTriggers[selectId] = btn;
+
+          sel.addEventListener('change', () => syncGlassSelectTrigger(selectId));
+          const observer = new MutationObserver(() => syncGlassSelectTrigger(selectId));
+          observer.observe(sel, { childList: true, attributes: true, attributeFilter: ['disabled'] });
+          syncGlassSelectTrigger(selectId);
+        });
+
+        // 2. Enhance Date <input type="date"> controls
+        Object.entries(GLASS_DATE_CONFIG).forEach(([inputId, cfg]) => {
+          const inp = document.getElementById(inputId);
+          if (!inp || glassDateTriggers[inputId]) return;
+
+          const wrap = document.createElement('div');
+          wrap.className = 'glass-control-wrap';
+          inp.parentNode.insertBefore(wrap, inp);
+          wrap.appendChild(inp);
+          inp.classList.add('glass-native-hidden');
+          inp.setAttribute('tabindex', '-1');
+          inp.setAttribute('aria-hidden', 'true');
+
+          const accentHex = getAccentHex(cfg.accent);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `glass-trigger-btn glass-accent-${cfg.accent} ${cfg.heightClass}`;
+          btn.innerHTML = `
+            <span class="flex items-center gap-1.5 min-w-0 flex-1">
+              <span class="w-5 h-5 rounded-md flex items-center justify-center shrink-0 border" style="${getTintedBadgeStyle(accentHex)}">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="17" rx="3" />
+                  <path stroke-linecap="round" d="M8 2v4M16 2v4M3 10h18" />
+                </svg>
+              </span>
+              <span class="glass-date-label text-xs font-bold tabular-nums truncate">Select date</span>
+            </span>
+          `;
+          btn.addEventListener('click', () => openGlassCalendarForInput(inputId));
+          wrap.appendChild(btn);
+          glassDateTriggers[inputId] = btn;
+
+          inp.addEventListener('change', () => syncGlassDateTrigger(inputId));
+          inp.addEventListener('input', () => syncGlassDateTrigger(inputId));
+          syncGlassDateTrigger(inputId);
+        });
+
+        // 3. Header Month/Year glass calendar trigger
+        const headerBtn = document.getElementById('headerMonthPickerBtn');
+        if (headerBtn) {
+          headerBtn.addEventListener('click', openGlassHeaderMonthPicker);
+        }
+
+        // 4. Account Types Editor & Reorder Modal events
+        const manageTypesBtn = document.getElementById('accPageManageTypesBtn');
+        if (manageTypesBtn) {
+          manageTypesBtn.addEventListener('click', openAccountTypesModal);
+        }
+        const accTypesOverlay = document.getElementById('accountTypesModal');
+        document.getElementById('closeAccountTypesBtn').addEventListener('click', () => accTypesOverlay.classList.add('hidden'));
+        accTypesOverlay.addEventListener('click', (e) => {
+          if (e.target === accTypesOverlay) accTypesOverlay.classList.add('hidden');
+        });
+        document.querySelectorAll('.new-acc-type-kind-btn').forEach((btn) => {
+          btn.addEventListener('click', () => applyNewAccTypeKindUI(btn.dataset.newTypeKind));
+        });
+        const addNewTypeAction = () => {
+          const inp = document.getElementById('newAccTypeNameInput');
+          const label = String(inp?.value || '').trim().slice(0, 32);
+          if (!label) {
+            showToast('Enter a name for the new account type', 'error');
+            return;
+          }
+          const dupBuiltIn = DEFAULT_ACCOUNT_TYPE_ORDER.some((k) => {
+            const cur = (draftAccountTypeLabels[k] || ACCOUNT_TYPES[k].label).trim().toLowerCase();
+            return cur === label.toLowerCase();
+          });
+          const dupCustom = draftCustomTypes.some((t) => t.label.trim().toLowerCase() === label.toLowerCase());
+          if (dupBuiltIn || dupCustom) {
+            showToast('An account type with this name already exists', 'error');
+            return;
+          }
+          const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 18) || 'type';
+          const key = `custom_${slug}_${Date.now().toString(36).slice(-4)}`;
+          const color = CURATED_SWATCHES[(draftCustomTypes.length + (newAccTypeKind === 'liability' ? 3 : 6)) % CURATED_SWATCHES.length];
+          draftCustomTypes.push({ key, label, kind: newAccTypeKind, color });
+          inp.value = '';
+          renderAccountTypesEditorList();
+          showToast(`Added "${label}" — tap Save Changes`, 'info');
+        };
+        document.getElementById('addNewAccTypeBtn').addEventListener('click', addNewTypeAction);
+        document.getElementById('newAccTypeNameInput').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            addNewTypeAction();
+          }
+        });
+        document.getElementById('resetAccountTypesBtn').addEventListener('click', () => {
+          draftAccountTypeLabels = {};
+          DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
+            draftAccountTypeLabels[k] = ACCOUNT_TYPES[k].label;
+          });
+          renderAccountTypesEditorList();
+        });
+        document.getElementById('saveAccountTypesBtn').addEventListener('click', () => {
+          const cleanLabels = {};
+          DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
+            const val = String(draftAccountTypeLabels[k] || '').trim().slice(0, 32);
+            if (val && val !== ACCOUNT_TYPES[k].label) {
+              cleanLabels[k] = val;
+            }
+          });
+          const cleanCustom = draftCustomTypes
+            .map((t) => ({
+              key: t.key,
+              label: String(t.label || '').trim().slice(0, 32) || 'Custom Type',
+              kind: t.kind === 'liability' ? 'liability' : 'asset',
+              color: normalizeHex(t.color, '#0ea5e9'),
+            }));
+
+          state.store.accountTypeLabels = cleanLabels;
+          state.store.customAccountTypes = cleanCustom;
+
+          // Keep existing order and append any newly added custom types
+          const allKeys = [...DEFAULT_ACCOUNT_TYPE_ORDER, ...cleanCustom.map((t) => t.key)];
+          const prevOrder = Array.isArray(state.store.accountTypeOrder) ? state.store.accountTypeOrder : allKeys;
+          const nextOrder = prevOrder.filter((k) => allKeys.includes(k));
+          allKeys.forEach((k) => { if (!nextOrder.includes(k)) nextOrder.push(k); });
+          state.store.accountTypeOrder = nextOrder;
+
+          saveStore();
+          populateAccountTypeSelectOptions();
+          syncAllGlassControls();
+          accTypesOverlay.classList.add('hidden');
+          renderActiveView();
+          showToast('Account types saved', 'success');
+        });
+
+        // 5. Overlay close & navigation listeners
+        const selOverlay = document.getElementById('glassSelectOverlay');
+        document.getElementById('glassSelectCloseBtn').addEventListener('click', () => selOverlay.classList.add('hidden'));
+        selOverlay.addEventListener('click', (e) => {
+          if (e.target === selOverlay) selOverlay.classList.add('hidden');
+        });
+
+        const calOverlay = document.getElementById('glassCalendarOverlay');
+        const closeCal = () => calOverlay.classList.add('hidden');
+        document.getElementById('glassCalCloseBtn').addEventListener('click', closeCal);
+        document.getElementById('glassCalDoneBtn').addEventListener('click', closeCal);
+        calOverlay.addEventListener('click', (e) => {
+          if (e.target === calOverlay) closeCal();
+        });
+
+        document.getElementById('glassCalPrevBtn').addEventListener('click', () => {
+          if (glassCalState.mode === 'day') {
+            glassCalState.viewMonth -= 1;
+            if (glassCalState.viewMonth < 0) {
+              glassCalState.viewMonth = 11;
+              glassCalState.viewYear -= 1;
+            }
+          } else {
+            glassCalState.viewYear -= 1;
+          }
+          renderGlassCalendar();
+        });
+
+        document.getElementById('glassCalNextBtn').addEventListener('click', () => {
+          if (glassCalState.mode === 'day') {
+            glassCalState.viewMonth += 1;
+            if (glassCalState.viewMonth > 11) {
+              glassCalState.viewMonth = 0;
+              glassCalState.viewYear += 1;
+            }
+          } else {
+            glassCalState.viewYear += 1;
+          }
+          renderGlassCalendar();
+        });
+
+        document.getElementById('glassCalModeToggleBtn').addEventListener('click', () => {
+          if (glassCalState.mode === 'headerMonth') return;
+          glassCalState.mode = glassCalState.mode === 'day' ? 'month' : 'day';
+          renderGlassCalendar();
+        });
+
+        document.getElementById('glassCalTodayBtn').addEventListener('click', () => {
+          const today = getTodayParts();
+          if (glassCalState.mode === 'headerMonth') {
+            state.selectedYear = today.year;
+            state.selectedMonth = today.monthIndex;
+            closeCal();
+            renderActiveView();
+          } else if (glassCalState.targetInputId) {
+            const inp = document.getElementById(glassCalState.targetInputId);
+            if (inp) {
+              inp.value = today.iso;
+              inp.dispatchEvent(new Event('input', { bubbles: true }));
+              inp.dispatchEvent(new Event('change', { bubbles: true }));
+              syncGlassDateTrigger(glassCalState.targetInputId);
+            }
+            closeCal();
+          }
+        });
+
+        // Keep glass triggers synced after form resets
+        ['txForm', 'accountForm', 'emiForm', 'planningEntryForm'].forEach((fid) => {
+          const formEl = document.getElementById(fid);
+          if (formEl) {
+            formEl.addEventListener('reset', () => setTimeout(syncAllGlassControls, 0));
+          }
+        });
+      };
+
       // =======================================================================
       // 18. INITIALIZATION
       // =======================================================================
@@ -7802,6 +9940,7 @@ function doPost(e) {
         loadStore();
         applyTheme(state.store.themeMode);
         bindEvents();
+        initGlassControls();
         initLongPressReorder();
         switchView('home');
         restoreSavedLocalFileHandle().then(() => startHourlyAutoSyncScheduler());
