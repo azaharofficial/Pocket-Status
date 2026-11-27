@@ -2770,11 +2770,14 @@
         </div>
       </div>
 
-      <div id="accountTypesEditorList" class="p-2.5 space-y-1.5 overflow-y-auto"></div>
+      <div class="px-3 pt-1.5 pb-0.5 flex items-center justify-between text-[10px] font-semibold opacity-65">
+        <span>Tap any icon to change icon &amp; colour</span>
+      </div>
+      <div id="accountTypesEditorList" class="p-2.5 pt-1.5 space-y-1.5 overflow-y-auto"></div>
 
       <div class="px-3 py-2.5 border-t border-slate-400/20 flex items-center justify-between gap-2">
         <button id="resetAccountTypesBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold glass-picker-option !w-auto !py-1.5 !px-2.5">
-          Reset Labels
+          Reset Defaults
         </button>
         <button id="saveAccountTypesBtn" type="button" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm transition active:scale-95">
           Save Changes
@@ -3059,6 +3062,49 @@ function doPost(e) {
         allKeys.forEach((k) => { if (!valid.includes(k)) valid.push(k); });
         return valid;
       };
+      const DEFAULT_ACCOUNT_TYPE_ICONS = {
+        saving: 'bank',
+        wallet: 'wallet',
+        cashback: 'coins',
+        due_from_others: 'due_from',
+        due_to_others: 'due_to',
+        credit_card: 'credit_card',
+      };
+
+      const ACCOUNT_TYPE_ICONS = [
+        { key: 'bank', label: 'Bank', d: 'M3 10h18M4 10V8l8-4 8 4v2M5 10v8m4-8v8m6-8v8m4-8v8M3 18h18' },
+        { key: 'credit_card', label: 'Credit Card', d: 'M2 7a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7zm0 3h20M6 15h4' },
+        { key: 'wallet', label: 'Wallet', d: 'M3 7a2 2 0 012-2h13a2 2 0 012 2v2h-5a3 3 0 000 6h5v2a2 2 0 01-2 2H5a2 2 0 01-2-2V7zm13 5h.01' },
+        { key: 'coins', label: 'Cashback / Coins', d: 'M12 6c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3zm-8 3v6c0 1.7 3.6 3 8 3s8-1.3 8-3V9M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3' },
+        { key: 'due_from', label: 'Due From Others', d: 'M16 11a4 4 0 10-8 0 4 4 0 008 0zM4 20a6 6 0 0112 0M19 8v6m-3-3h6' },
+        { key: 'due_to', label: 'Due To Others', d: 'M16 11a4 4 0 10-8 0 4 4 0 008 0zM4 20a6 6 0 0112 0M16 11h6' },
+        { key: 'folder', label: 'Folder / Asset', d: 'M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z' },
+        { key: 'clock', label: 'Pending / Liability', d: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
+        { key: 'cash', label: 'Cash / Notes', d: 'M4 7h16v10H4V7zm8 2a3 3 0 100 6 3 3 0 000-6zM2 12h2m16 0h2' },
+        { key: 'piggy', label: 'Piggy / RD', d: 'M5 12a6 6 0 0111-3h2l2 2v3l-2 1a5 5 0 01-2 2v2h-2v-1H9v1H7v-2a5 5 0 01-2-5zm6-3h.01' },
+        { key: 'chart', label: 'Investments / SIP', d: 'M4 19h16M5 15l4-4 3 3 7-7m0 0h-4m4 0v4' },
+        { key: 'vault', label: 'Fixed Deposit', d: 'M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1zm8 4a3 3 0 100 6 3 3 0 000-6zm0 0v6m-3-3h6' },
+        { key: 'gold', label: 'Gold / Bullion', d: 'M4 18l2-5h5l2 5H4zm7 0l2-5h5l2 5h-9zM7.5 11l2-5h5l2 5h-9z' },
+        { key: 'jewelry', label: 'Diamond / Luxury', d: 'M6 4h12l4 5-10 11L2 9l4-5zm-4 5h20M9 4l-1 5 4 11 4-11-1-5' },
+        { key: 'home', label: 'Home / Property', d: 'M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5.5v-6.5h-5V21H4a1 1 0 01-1-1v-9.5z' },
+        { key: 'car', label: 'Vehicle / Auto', d: 'M5 11l2-5h10l2 5M3 11h18v6H3v-6zm3 6v2m12-2v2M7 14h.01M17 14h.01' },
+        { key: 'shield', label: 'Insurance', d: 'M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3z' },
+        { key: 'briefcase', label: 'Business / Office', d: 'M3 8h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm6 0V5a1 1 0 011-1h4a1 1 0 011 1v3m-9 5h12' },
+        { key: 'crypto', label: 'Stocks / Crypto', d: 'M8 5v14m0-12h5a2.5 2.5 0 010 5H8m0 0h6a2.5 2.5 0 010 5H8M11 3v2m0 14v2' },
+        { key: 'receipt', label: 'Bills / Loan', d: 'M6 3h12v18l-3-2-3 2-3-2-3 2V3zm3 5h6M9 12h6M9 16h4' },
+        { key: 'gift', label: 'Rewards / Gift', d: 'M20 12v8a1 1 0 01-1 1H5a1 1 0 01-1-1v-8m16 0H4m16 0V8a1 1 0 00-1-1H5a1 1 0 00-1 1v4m8-5v14m0-14c-1.5-3-5-3-5-1s3.5 2 5 1zm0 0c1.5-3 5-3 5-1s-3.5 2-5 1z' },
+        { key: 'globe', label: 'Forex / Global', d: 'M12 3a9 9 0 100 18 9 9 0 000-18zm0 0c3 3 3 15 0 18m0-18C9 6 9 18 12 21M3 12h18' },
+        { key: 'star', label: 'VIP / Special', d: 'M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 21l1.1-6.5L2.6 9.8l6.5-.9L12 3z' },
+        { key: 'tag', label: 'Tag / Other', d: 'M7 7h.01M7 3h5a2 2 0 011.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A2 2 0 013 10V5a2 2 0 012-2h2z' },
+      ];
+
+      const getAccountIconSvgByKey = (iconKey, sizeClass = 'w-4 h-4') => {
+        const found = ACCOUNT_TYPE_ICONS.find((ic) => ic.key === iconKey) || ACCOUNT_TYPE_ICONS[0];
+        return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="${found.d}" />
+        </svg>`;
+      };
+
       const getAccountTypeMeta = (type) => {
         const custom = getCustomAccountTypeByKey(type);
         if (custom) {
@@ -3067,6 +3113,9 @@ function doPost(e) {
             label: lbl,
             shortLabel: lbl,
             defaultColor: normalizeHex(custom.color, custom.kind === 'liability' ? '#f43f5e' : '#0ea5e9'),
+            icon: ACCOUNT_TYPE_ICONS.some((ic) => ic.key === custom.icon)
+              ? custom.icon
+              : (custom.kind === 'liability' ? 'clock' : 'folder'),
             listId: `customAccountsList-${custom.key}`,
             countId: `customCountLabel-${custom.key}`,
             unit: 'account',
@@ -3079,53 +3128,32 @@ function doPost(e) {
         const customLabel = typeof state !== 'undefined' && state.store && state.store.accountTypeLabels
           ? String(state.store.accountTypeLabels[type] || '').trim()
           : '';
-        if (customLabel) {
-          return { ...base, label: customLabel, shortLabel: customLabel, isCustom: false };
-        }
-        return { ...base, isCustom: false };
+        const customColor = typeof state !== 'undefined' && state.store && state.store.accountTypeColors
+          ? state.store.accountTypeColors[type]
+          : null;
+        const customIcon = typeof state !== 'undefined' && state.store && state.store.accountTypeIcons
+          ? state.store.accountTypeIcons[type]
+          : null;
+        const resolvedColor = customColor ? normalizeHex(customColor, base.defaultColor) : base.defaultColor;
+        const resolvedIcon = ACCOUNT_TYPE_ICONS.some((ic) => ic.key === customIcon)
+          ? customIcon
+          : (DEFAULT_ACCOUNT_TYPE_ICONS[type] || 'bank');
+        return {
+          ...base,
+          label: customLabel || base.label,
+          shortLabel: customLabel || base.shortLabel,
+          defaultColor: resolvedColor,
+          icon: resolvedIcon,
+          isCustom: false,
+        };
       };
 
-      const getAccountSvg = (type, sizeClass = 'w-4 h-4') => {
-        if (type === 'credit_card') {
-          return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <rect x="2" y="5" width="20" height="14" rx="2" />
-            <line x1="2" y1="10" x2="22" y2="10" />
-            <line x1="6" y1="15" x2="10" y2="15" stroke-linecap="round" />
-          </svg>`;
+      const getAccountSvg = (type, sizeClass = 'w-4 h-4', overrideIconKey = null) => {
+        if (overrideIconKey) {
+          return getAccountIconSvgByKey(overrideIconKey, sizeClass);
         }
-        if (type === 'wallet') {
-          return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h13a2 2 0 012 2v2h-5a3 3 0 000 6h5v2a2 2 0 01-2 2H5a2 2 0 01-2-2V7zm13 5h.01" />
-          </svg>`;
-        }
-        if (type === 'cashback') {
-          return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3zm-8 3v6c0 1.7 3.6 3 8 3s8-1.3 8-3V9M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
-          </svg>`;
-        }
-        if (type === 'due_from_others') {
-          return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11a4 4 0 10-8 0 4 4 0 008 0zM4 20a6 6 0 0112 0M19 8v6m-3-3h6" />
-          </svg>`;
-        }
-        if (type === 'due_to_others') {
-          return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11a4 4 0 10-8 0 4 4 0 008 0zM4 20a6 6 0 0112 0M16 11h6" />
-          </svg>`;
-        }
-        if (type !== 'saving') {
-          if (isLiabilityType(type)) {
-            return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>`;
-          }
-          return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
-          </svg>`;
-        }
-        return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M4 10V8l8-4 8 4v2M5 10v8m4-8v8m6-8v8m4-8v8M3 18h18" />
-        </svg>`;
+        const meta = getAccountTypeMeta(type);
+        return getAccountIconSvgByKey(meta.icon || 'bank', sizeClass);
       };
 
       const CATEGORY_ICONS = [
@@ -3329,8 +3357,9 @@ function doPost(e) {
           ],
           accountTypeOrder: ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'],
           accountTypeLabels: {},
+          accountTypeColors: {},
+          accountTypeIcons: {},
           customAccountTypes: [],
-        deletedAccountTypes: [],
           deletedAccountTypes: [],
           includePrevMonthNetWorth: false,
           includeEmiPrincipalInCcLimit: true,
@@ -3641,7 +3670,10 @@ function doPost(e) {
         ],
         accountTypeOrder: ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'],
         accountTypeLabels: {},
+        accountTypeColors: {},
+        accountTypeIcons: {},
         customAccountTypes: [],
+        deletedAccountTypes: [],
         includePrevMonthNetWorth: false,
         includeEmiPrincipalInCcLimit: true,
         themeMode: 'system',
@@ -3679,6 +3711,9 @@ function doPost(e) {
                 label: String(t.label || `Custom ${idx + 1}`).trim().slice(0, 32),
                 kind: t.kind === 'liability' ? 'liability' : 'asset',
                 color: normalizeHex(t.color, CURATED_SWATCHES[(idx + 6) % CURATED_SWATCHES.length]),
+                icon: ACCOUNT_TYPE_ICONS.some((ic) => ic.key === t.icon)
+                  ? t.icon
+                  : (t.kind === 'liability' ? 'clock' : 'folder'),
               }))
           : [];
         const customTypeKeys = new Set(customAccountTypes.map((t) => t.key));
@@ -3873,6 +3908,30 @@ function doPost(e) {
               ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'].forEach((k) => {
                 const v = String(rawObj.accountTypeLabels[k] || '').trim().slice(0, 32);
                 if (v) out[k] = v;
+              });
+            }
+            return out;
+          })(),
+          accountTypeColors: (() => {
+            const out = {};
+            if (rawObj.accountTypeColors && typeof rawObj.accountTypeColors === 'object') {
+              DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
+                const rawC = rawObj.accountTypeColors[k];
+                if (typeof rawC === 'string' && /^#[0-9a-fA-F]{6}$/.test(rawC.trim())) {
+                  out[k] = rawC.trim().toLowerCase();
+                }
+              });
+            }
+            return out;
+          })(),
+          accountTypeIcons: (() => {
+            const out = {};
+            if (rawObj.accountTypeIcons && typeof rawObj.accountTypeIcons === 'object') {
+              DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
+                const rawI = String(rawObj.accountTypeIcons[k] || '').trim();
+                if (ACCOUNT_TYPE_ICONS.some((ic) => ic.key === rawI)) {
+                  out[k] = rawI;
+                }
               });
             }
             return out;
@@ -5564,6 +5623,7 @@ function doPost(e) {
               headingEl.style.color = meta.defaultColor;
             } else {
               const customLabel = state.store.accountTypeLabels && state.store.accountTypeLabels[accType];
+              const customColor = state.store.accountTypeColors && state.store.accountTypeColors[accType];
               const defaultHeadings = {
                 saving: 'Saving Accounts',
                 wallet: 'Wallet',
@@ -5573,6 +5633,7 @@ function doPost(e) {
                 credit_card: 'Credit Cards',
               };
               headingEl.textContent = customLabel ? customLabel : (defaultHeadings[accType] || meta.label);
+              headingEl.style.color = customColor ? normalizeHex(customColor, meta.defaultColor) : '';
             }
           }
         });
@@ -6835,6 +6896,8 @@ function doPost(e) {
           homeSlabOrder: state.store.homeSlabOrder,
           accountTypeOrder: state.store.accountTypeOrder,
           accountTypeLabels: state.store.accountTypeLabels,
+          accountTypeColors: state.store.accountTypeColors,
+          accountTypeIcons: state.store.accountTypeIcons,
           customAccountTypes: state.store.customAccountTypes,
           deletedAccountTypes: state.store.deletedAccountTypes,
           includePrevMonthNetWorth: state.store.includePrevMonthNetWorth,
@@ -9617,6 +9680,9 @@ function doPost(e) {
       };
 
       let draftDeletedTypes = [];
+      let draftAccountTypeColors = {};
+      let draftAccountTypeIcons = {};
+      let expandedStyleTypeKey = null;
 
       const renderAccountTypesEditorList = () => {
         const listEl = document.getElementById('accountTypesEditorList');
@@ -9628,7 +9694,8 @@ function doPost(e) {
             key: k,
             label: draftAccountTypeLabels[k] !== undefined ? draftAccountTypeLabels[k] : ACCOUNT_TYPES[k].label,
             placeholder: ACCOUNT_TYPES[k].label,
-            color: ACCOUNT_TYPES[k].defaultColor,
+            color: normalizeHex(draftAccountTypeColors[k], ACCOUNT_TYPES[k].defaultColor),
+            icon: draftAccountTypeIcons[k] || DEFAULT_ACCOUNT_TYPE_ICONS[k] || 'bank',
             isCustom: false,
             kind: isLiabilityType(k) ? 'liability' : 'asset',
           })),
@@ -9636,7 +9703,10 @@ function doPost(e) {
             key: ct.key,
             label: ct.label,
             placeholder: 'Custom Type',
-            color: ct.color,
+            color: normalizeHex(ct.color, ct.kind === 'liability' ? '#f43f5e' : '#0ea5e9'),
+            icon: ACCOUNT_TYPE_ICONS.some((ic) => ic.key === ct.icon)
+              ? ct.icon
+              : (ct.kind === 'liability' ? 'clock' : 'folder'),
             isCustom: true,
             kind: ct.kind,
           })),
@@ -9648,26 +9718,162 @@ function doPost(e) {
             const badgeCls = item.kind === 'liability'
               ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30'
               : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30';
+            const isExpanded = expandedStyleTypeKey === item.key;
+            const isCurated = CURATED_SWATCHES.includes(item.color);
+
+            const styleDrawerHtml = isExpanded
+              ? `
+                <div class="mt-1.5 pt-2 border-t border-slate-400/20 space-y-2">
+                  <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-bold opacity-75">
+                      <span>Colour</span>
+                      <span class="font-mono uppercase">${escapeHtml(item.color)}</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                      ${CURATED_SWATCHES.map((hex) => `
+                        <button
+                          type="button"
+                          data-pick-type-color="${hex}"
+                          data-target-key="${escapeHtml(item.key)}"
+                          data-target-custom="${item.isCustom ? '1' : '0'}"
+                          title="${hex}"
+                          class="w-5 h-5 rounded-full transition-transform hover:scale-110 shrink-0 ${
+                            hex === item.color ? 'ring-2 ring-slate-900 dark:ring-white ring-offset-1 scale-110' : 'border border-black/15'
+                          }"
+                          style="background-color: ${hex};"
+                        ></button>
+                      `).join('')}
+                      <label
+                        title="Custom Colour"
+                        class="relative w-5 h-5 rounded-full cursor-pointer flex items-center justify-center shrink-0 transition-transform hover:scale-110 ${
+                          !isCurated ? 'ring-2 ring-slate-900 dark:ring-white ring-offset-1 scale-110' : 'border border-slate-400/60'
+                        }"
+                        style="background: ${!isCurated ? item.color : 'conic-gradient(from 0deg, #f43f5e, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ec4899, #f43f5e)'};"
+                      >
+                        <input
+                          type="color"
+                          value="${escapeHtml(item.color)}"
+                          data-pick-type-color-native="${escapeHtml(item.key)}"
+                          data-target-custom="${item.isCustom ? '1' : '0'}"
+                          class="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                          aria-label="Custom colour"
+                        />
+                        <span class="w-2 h-2 rounded-full bg-white/85 flex items-center justify-center pointer-events-none">
+                          <span class="text-[7px] font-bold text-slate-900 leading-none">+</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-bold opacity-75">
+                      <span>Icon Bank</span>
+                      <span>${escapeHtml((ACCOUNT_TYPE_ICONS.find((ic) => ic.key === item.icon) || ACCOUNT_TYPE_ICONS[0]).label)}</span>
+                    </div>
+                    <div class="grid grid-cols-6 gap-1">
+                      ${ACCOUNT_TYPE_ICONS.map((ic) => {
+                        const sel = ic.key === item.icon;
+                        return `
+                          <button
+                            type="button"
+                            data-pick-type-icon="${escapeHtml(ic.key)}"
+                            data-target-key="${escapeHtml(item.key)}"
+                            data-target-custom="${item.isCustom ? '1' : '0'}"
+                            title="${escapeHtml(ic.label)}"
+                            class="h-8 rounded-lg flex items-center justify-center border transition active:scale-95 ${
+                              sel ? 'ring-2 ring-slate-900 dark:ring-white font-bold' : 'bg-white/40 dark:bg-slate-800/40 border-slate-400/25 text-slate-600 dark:text-slate-300 hover:bg-white/75 dark:hover:bg-slate-700/60'
+                            }"
+                            ${sel ? `style="${getTintedBadgeStyle(item.color)}"` : ''}
+                          >
+                            ${getAccountIconSvgByKey(ic.key, 'w-4 h-4')}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+                </div>
+              `
+              : '';
+
             return `
-              <div class="glass-picker-option !cursor-default !py-1.5 !px-2">
-                <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border" style="${getTintedBadgeStyle(item.color)}">
-                  ${getAccountSvg(item.key, 'w-3.5 h-3.5')}
-                </span>
-                <input
-                  type="text"
-                  maxlength="32"
-                  data-edit-type-key="${escapeHtml(item.key)}"
-                  data-edit-is-custom="${item.isCustom ? '1' : '0'}"
-                  value="${escapeHtml(item.label)}"
-                  placeholder="${escapeHtml(item.placeholder)}"
-                  class="glass-inline-input flex-1"
-                />
-                <span class="px-1.5 py-0.5 rounded-md border text-[9px] font-bold shrink-0 ${badgeCls}">${badgeText}</span>
-                <button type="button" data-del-acc-type="${escapeHtml(item.key)}" data-del-is-custom="${item.isCustom ? '1' : '0'}" class="glass-icon-btn !w-6 !h-6 hover:!text-rose-600 shrink-0" aria-label="Delete account type" title="Delete account type">${getBinSvg('w-3 h-3')}</button>
+              <div class="glass-picker-option !block !cursor-default !py-1.5 !px-2">
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    data-toggle-type-style="${escapeHtml(item.key)}"
+                    title="Change icon &amp; colour"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition hover:scale-105 active:scale-95 ${isExpanded ? 'ring-2 ring-emerald-500 ring-offset-1' : ''}"
+                    style="${getTintedBadgeStyle(item.color)}"
+                  >
+                    ${getAccountIconSvgByKey(item.icon, 'w-3.5 h-3.5')}
+                  </button>
+                  <input
+                    type="text"
+                    maxlength="32"
+                    data-edit-type-key="${escapeHtml(item.key)}"
+                    data-edit-is-custom="${item.isCustom ? '1' : '0'}"
+                    value="${escapeHtml(item.label)}"
+                    placeholder="${escapeHtml(item.placeholder)}"
+                    class="glass-inline-input flex-1"
+                  />
+                  <span class="px-1.5 py-0.5 rounded-md border text-[9px] font-bold shrink-0 ${badgeCls}">${badgeText}</span>
+                  <button type="button" data-del-acc-type="${escapeHtml(item.key)}" data-del-is-custom="${item.isCustom ? '1' : '0'}" class="glass-icon-btn !w-6 !h-6 hover:!text-rose-600 shrink-0" aria-label="Delete account type" title="Delete account type">${getBinSvg('w-3 h-3')}</button>
+                </div>
+                ${styleDrawerHtml}
               </div>
             `;
           })
           .join('');
+
+        listEl.querySelectorAll('[data-toggle-type-style]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.toggleTypeStyle;
+            expandedStyleTypeKey = expandedStyleTypeKey === key ? null : key;
+            renderAccountTypesEditorList();
+          });
+        });
+
+        listEl.querySelectorAll('[data-pick-type-color]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.targetKey;
+            const hex = normalizeHex(btn.dataset.pickTypeColor);
+            if (btn.dataset.targetCustom === '1') {
+              const ct = draftCustomTypes.find((t) => t.key === key);
+              if (ct) ct.color = hex;
+            } else {
+              draftAccountTypeColors[key] = hex;
+            }
+            renderAccountTypesEditorList();
+          });
+        });
+
+        listEl.querySelectorAll('[data-pick-type-color-native]').forEach((inp) => {
+          inp.addEventListener('change', (e) => {
+            const key = e.target.dataset.pickTypeColorNative;
+            const hex = normalizeHex(e.target.value);
+            if (e.target.dataset.targetCustom === '1') {
+              const ct = draftCustomTypes.find((t) => t.key === key);
+              if (ct) ct.color = hex;
+            } else {
+              draftAccountTypeColors[key] = hex;
+            }
+            renderAccountTypesEditorList();
+          });
+        });
+
+        listEl.querySelectorAll('[data-pick-type-icon]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.targetKey;
+            const iconKey = btn.dataset.pickTypeIcon;
+            if (btn.dataset.targetCustom === '1') {
+              const ct = draftCustomTypes.find((t) => t.key === key);
+              if (ct) ct.icon = iconKey;
+            } else {
+              draftAccountTypeIcons[key] = iconKey;
+            }
+            renderAccountTypesEditorList();
+          });
+        });
 
         listEl.querySelectorAll('[data-edit-type-key]').forEach((inp) => {
           inp.addEventListener('input', (e) => {
@@ -9696,6 +9902,7 @@ function doPost(e) {
               showToast(`Cannot delete: ${usedCount} account(s) use this type`, 'error');
               return;
             }
+            if (expandedStyleTypeKey === key) expandedStyleTypeKey = null;
             if (isCustom) {
               draftCustomTypes = draftCustomTypes.filter((t) => t.key !== key);
             } else if (!draftDeletedTypes.includes(key)) {
@@ -9708,10 +9915,21 @@ function doPost(e) {
 
       const openAccountTypesModal = () => {
         draftAccountTypeLabels = {};
+        draftAccountTypeColors = {};
+        draftAccountTypeIcons = {};
+        expandedStyleTypeKey = null;
         DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
-          draftAccountTypeLabels[k] = getAccountTypeMeta(k).label;
+          const meta = getAccountTypeMeta(k);
+          draftAccountTypeLabels[k] = meta.label;
+          draftAccountTypeColors[k] = meta.defaultColor;
+          draftAccountTypeIcons[k] = meta.icon || DEFAULT_ACCOUNT_TYPE_ICONS[k] || 'bank';
         });
-        draftCustomTypes = getCustomAccountTypes().map((t) => ({ ...t }));
+        draftCustomTypes = getCustomAccountTypes().map((t) => ({
+          ...t,
+          icon: ACCOUNT_TYPE_ICONS.some((ic) => ic.key === t.icon)
+            ? t.icon
+            : (t.kind === 'liability' ? 'clock' : 'folder'),
+        }));
         draftDeletedTypes = [...getDeletedAccountTypes()];
         const nameInp = document.getElementById('newAccTypeNameInput');
         if (nameInp) nameInp.value = '';
@@ -9836,7 +10054,9 @@ function doPost(e) {
           const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 18) || 'type';
           const key = `custom_${slug}_${Date.now().toString(36).slice(-4)}`;
           const color = CURATED_SWATCHES[(draftCustomTypes.length + (newAccTypeKind === 'liability' ? 3 : 6)) % CURATED_SWATCHES.length];
-          draftCustomTypes.push({ key, label, kind: newAccTypeKind, color });
+          const icon = newAccTypeKind === 'liability' ? 'clock' : 'folder';
+          draftCustomTypes.push({ key, label, kind: newAccTypeKind, color, icon });
+          expandedStyleTypeKey = key;
           inp.value = '';
           renderAccountTypesEditorList();
           showToast(`Added "${label}" — tap Save Changes`, 'info');
@@ -9850,9 +10070,14 @@ function doPost(e) {
         });
         document.getElementById('resetAccountTypesBtn').addEventListener('click', () => {
           draftAccountTypeLabels = {};
+          draftAccountTypeColors = {};
+          draftAccountTypeIcons = {};
           draftDeletedTypes = [];
+          expandedStyleTypeKey = null;
           DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
             draftAccountTypeLabels[k] = ACCOUNT_TYPES[k].label;
+            draftAccountTypeColors[k] = ACCOUNT_TYPES[k].defaultColor;
+            draftAccountTypeIcons[k] = DEFAULT_ACCOUNT_TYPE_ICONS[k] || 'bank';
           });
           renderAccountTypesEditorList();
         });
@@ -9861,10 +10086,20 @@ function doPost(e) {
             (k) => DEFAULT_ACCOUNT_TYPE_ORDER.includes(k) && !state.store.accounts.some((a) => a.type === k)
           );
           const cleanLabels = {};
+          const cleanColors = {};
+          const cleanIcons = {};
           DEFAULT_ACCOUNT_TYPE_ORDER.filter((k) => !cleanDeleted.includes(k)).forEach((k) => {
             const val = String(draftAccountTypeLabels[k] || '').trim().slice(0, 32);
             if (val && val !== ACCOUNT_TYPES[k].label) {
               cleanLabels[k] = val;
+            }
+            const col = normalizeHex(draftAccountTypeColors[k], ACCOUNT_TYPES[k].defaultColor);
+            if (col !== ACCOUNT_TYPES[k].defaultColor) {
+              cleanColors[k] = col;
+            }
+            const ic = draftAccountTypeIcons[k];
+            if (ic && ACCOUNT_TYPE_ICONS.some((x) => x.key === ic) && ic !== (DEFAULT_ACCOUNT_TYPE_ICONS[k] || 'bank')) {
+              cleanIcons[k] = ic;
             }
           });
           const cleanCustom = draftCustomTypes
@@ -9873,10 +10108,15 @@ function doPost(e) {
               label: String(t.label || '').trim().slice(0, 32) || 'Custom Type',
               kind: t.kind === 'liability' ? 'liability' : 'asset',
               color: normalizeHex(t.color, '#0ea5e9'),
+              icon: ACCOUNT_TYPE_ICONS.some((x) => x.key === t.icon)
+                ? t.icon
+                : (t.kind === 'liability' ? 'clock' : 'folder'),
             }));
 
           state.store.deletedAccountTypes = cleanDeleted;
           state.store.accountTypeLabels = cleanLabels;
+          state.store.accountTypeColors = cleanColors;
+          state.store.accountTypeIcons = cleanIcons;
           state.store.customAccountTypes = cleanCustom;
 
           // Keep existing order and append any newly added custom types
