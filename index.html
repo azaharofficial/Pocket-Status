@@ -1892,6 +1892,17 @@
           </button>
         </div>
 
+        <!-- Custom Offline Sync Folder Path -->
+        <div class="space-y-1">
+          <label for="offlineFolderPathInput" class="block text-[11px] font-bold text-slate-700">Offline Folder Path</label>
+          <div class="grid grid-cols-[1fr_auto] gap-2 items-center">
+            <input id="offlineFolderPathInput" type="text" placeholder="Apps/Pocket Apps/Backups/Pocket Status" class="min-w-0 h-9 px-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white" />
+            <button id="pickOfflineFolderBtn" type="button" class="inline-flex items-center gap-1 h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold transition active:scale-95" title="Choose local base folder">
+              <span>📁 Folder</span>
+            </button>
+          </div>
+        </div>
+
         <label class="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
           <input id="offlineAutoHourlyToggle" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0" />
           <div class="min-w-0">
@@ -2859,6 +2870,7 @@
       const STORAGE_KEY = 'pocket_status_final_v1';
       const LEGACY_KEYS = ['pocket_status_v2', 'pocket_status_v1'];
       const DEFAULT_DRIVE_FOLDER_PATH = 'Apps/Pocket Apps/Backups/Pocket Status';
+      const DEFAULT_OFFLINE_FOLDER_PATH = 'Apps/Pocket Apps/Backups/Pocket Status';
       const BACKUP_FILENAME = 'pocket-status-backup.json';
       const CONTACT_EMAIL = 'azaharofficial@gmail.com';
 
@@ -2995,6 +3007,17 @@ function doPost(e) {
 
       const getDriveFolderPath = () =>
         normalizeDriveFolderPath(state?.store?.syncConfig?.folderPath);
+
+      const normalizeOfflineFolderPath = (rawPath) => {
+        const parts = String(rawPath || '')
+          .split('/')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        return parts.length > 0 ? parts.join('/') : DEFAULT_OFFLINE_FOLDER_PATH;
+      };
+
+      const getOfflineFolderPath = () =>
+        normalizeOfflineFolderPath(state?.store?.syncConfig?.offlineFolderPath);
 
       const ACCOUNT_TYPES = {
         saving: {
@@ -3399,6 +3422,7 @@ function doPost(e) {
             clientOrUrl: '',
             scriptUrl: '',
             folderPath: DEFAULT_DRIVE_FOLDER_PATH,
+            offlineFolderPath: DEFAULT_OFFLINE_FOLDER_PATH,
             pin: '',
             autoBackup: false,
             autoHourlyLocalSync: true,
@@ -3713,6 +3737,7 @@ function doPost(e) {
           clientOrUrl: '',
           scriptUrl: '',
           folderPath: DEFAULT_DRIVE_FOLDER_PATH,
+          offlineFolderPath: DEFAULT_OFFLINE_FOLDER_PATH,
           pin: '',
           autoBackup: false,
           autoHourlyLocalSync: true,
@@ -3978,6 +4003,7 @@ function doPost(e) {
             clientOrUrl: String(rawSync.clientOrUrl || rawSync.scriptUrl || ''),
             scriptUrl: String(rawSync.scriptUrl || ''),
             folderPath: normalizeDriveFolderPath(rawSync.folderPath),
+            offlineFolderPath: normalizeOfflineFolderPath(rawSync.offlineFolderPath),
             pin: String(rawSync.pin ?? rawSync.secretPin ?? ''),
             autoBackup: Boolean(rawSync.autoBackup),
             autoHourlyLocalSync: rawSync.autoHourlyLocalSync !== undefined ? Boolean(rawSync.autoHourlyLocalSync) : true,
@@ -6655,6 +6681,7 @@ function doPost(e) {
       };
 
       let localFileHandle = null;
+      let localDirHandle = null;
       let driveAccessToken = null;
       let driveTokenExpiry = 0;
       let driveSyncError = false;
@@ -6763,25 +6790,33 @@ function doPost(e) {
         const offLastEl = document.getElementById('offlineLastBackupLabel');
         if (offLastEl) offLastEl.textContent = `Last offline backup: ${formatBackupTimestamp(cfg.lastOfflineBackupAt)}`;
 
+        const offPathInput = document.getElementById('offlineFolderPathInput');
+        const resolvedOffPath = getOfflineFolderPath();
+        if (offPathInput && document.activeElement !== offPathInput) {
+          offPathInput.value = resolvedOffPath;
+        }
+
         const fileStatEl = document.getElementById('offlineFileStatus');
         if (fileStatEl) {
-          fileStatEl.textContent = localFileHandle
+          fileStatEl.textContent = localDirHandle
+            ? `Linked: ${localDirHandle.name}/${resolvedOffPath}`
+            : localFileHandle
             ? `Linked: ${localFileHandle.name}`
             : cfg.linkedFileName
-            ? `Last file: ${cfg.linkedFileName}`
-            : 'No local file linked';
+            ? `Last: ${cfg.linkedFileName}`
+            : 'No local folder linked';
         }
 
         const offNextEl = document.getElementById('offlineHourlyNextLabel');
         if (offNextEl) {
           if (cfg.autoHourlyLocalSync === false) {
             offNextEl.textContent = 'Hourly local sync is paused';
-          } else if (localFileHandle) {
+          } else if (localDirHandle || localFileHandle) {
             offNextEl.textContent = cfg.lastOfflineBackupAt
               ? `Next hourly sync: ${formatNextHourlyLabel(cfg.lastOfflineBackupAt)}`
               : 'Hourly sync active (runs every 1 hour)';
           } else {
-            offNextEl.textContent = 'Tap "Save & Sync Locally" once to link a file for hourly auto-sync';
+            offNextEl.textContent = 'Tap "📁 Folder" or "Save & Sync Locally" to link a folder for hourly auto-sync';
           }
         }
 
@@ -7087,12 +7122,12 @@ function doPost(e) {
           req.onerror = () => reject(req.error);
         });
 
-      const persistLocalFileHandle = async (handle) => {
+      const persistLocalFileHandle = async (handle, key = 'localBackupFile') => {
         try {
           const db = await openHandleDb();
           await new Promise((resolve, reject) => {
             const tx = db.transaction('handles', 'readwrite');
-            tx.objectStore('handles').put(handle, 'localBackupFile');
+            tx.objectStore('handles').put(handle, key);
             tx.oncomplete = resolve;
             tx.onerror = () => reject(tx.error);
           });
@@ -7103,21 +7138,67 @@ function doPost(e) {
       const restoreSavedLocalFileHandle = async () => {
         try {
           const db = await openHandleDb();
-          const handle = await new Promise((resolve, reject) => {
-            const tx = db.transaction('handles', 'readonly');
-            const req = tx.objectStore('handles').get('localBackupFile');
-            req.onsuccess = () => resolve(req.result || null);
-            req.onerror = () => reject(req.error);
-          });
+          const readKey = (key) =>
+            new Promise((resolve) => {
+              const tx = db.transaction('handles', 'readonly');
+              const req = tx.objectStore('handles').get(key);
+              req.onsuccess = () => resolve(req.result || null);
+              req.onerror = () => resolve(null);
+            });
+          const [dirHandle, fileHandle] = await Promise.all([
+            readKey('localBackupDir'),
+            readKey('localBackupFile'),
+          ]);
           db.close();
-          if (handle) {
-            localFileHandle = handle;
-            if (!state.store.syncConfig.linkedFileName && handle.name) {
-              state.store.syncConfig.linkedFileName = handle.name;
+          if (dirHandle) {
+            localDirHandle = dirHandle;
+            if (!state.store.syncConfig.linkedFileName && dirHandle.name) {
+              state.store.syncConfig.linkedFileName = `${dirHandle.name}/${getOfflineFolderPath()}`;
             }
-            if (state.activeView === 'settings') renderSyncUI();
           }
+          if (fileHandle) {
+            localFileHandle = fileHandle;
+            if (!state.store.syncConfig.linkedFileName && fileHandle.name) {
+              state.store.syncConfig.linkedFileName = fileHandle.name;
+            }
+          }
+          if ((dirHandle || fileHandle) && state.activeView === 'settings') renderSyncUI();
         } catch (err) {}
+      };
+
+      const writeToLinkedLocalDir = async (dirHandle, silent = false) => {
+        if (!dirHandle || localSyncBusy) return false;
+        localSyncBusy = true;
+        try {
+          if (typeof dirHandle.queryPermission === 'function') {
+            let perm = await dirHandle.queryPermission({ mode: 'readwrite' });
+            if (perm !== 'granted') {
+              if (silent) return false;
+              if (typeof dirHandle.requestPermission === 'function') {
+                perm = await dirHandle.requestPermission({ mode: 'readwrite' });
+              }
+            }
+            if (perm !== 'granted') return false;
+          }
+          const folderPath = getOfflineFolderPath();
+          const parts = folderPath.split('/').filter(Boolean);
+          let currentDir = dirHandle;
+          for (const part of parts) {
+            currentDir = await currentDir.getDirectoryHandle(part, { create: true });
+          }
+          const fileHandle = await currentDir.getFileHandle(BACKUP_FILENAME, { create: true });
+          const jsonStr = JSON.stringify(buildBackupPayload(), null, 2);
+          const writable = await fileHandle.createWritable();
+          await writable.write(jsonStr);
+          await writable.close();
+          state.store.syncConfig.linkedFileName = `${dirHandle.name}/${folderPath}/${BACKUP_FILENAME}`;
+          state.store.syncConfig.lastOfflineBackupAt = new Date().toISOString();
+          saveStore(false);
+          if (state.activeView === 'settings') renderSyncUI();
+          return true;
+        } finally {
+          localSyncBusy = false;
+        }
       };
 
       const writeToLinkedLocalFile = async (handle, silent = false) => {
@@ -7148,16 +7229,74 @@ function doPost(e) {
         }
       };
 
+      const pickOfflineRootFolder = async () => {
+        const offPathEl = document.getElementById('offlineFolderPathInput');
+        if (offPathEl) {
+          state.store.syncConfig.offlineFolderPath = normalizeOfflineFolderPath(offPathEl.value);
+          offPathEl.value = state.store.syncConfig.offlineFolderPath;
+          saveStore(false);
+        }
+        try {
+          if (window.showDirectoryPicker) {
+            localDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+            await persistLocalFileHandle(localDirHandle, 'localBackupDir');
+            const ok = await writeToLinkedLocalDir(localDirHandle, false);
+            if (ok) {
+              showToast(`Linked & synced to ${localDirHandle.name}/${getOfflineFolderPath()}`, 'success');
+              return;
+            }
+          } else if (window.showSaveFilePicker) {
+            localFileHandle = await window.showSaveFilePicker({
+              suggestedName: BACKUP_FILENAME,
+              types: [{ description: 'JSON Backup', accept: { 'application/json': ['.json'] } }],
+            });
+            await persistLocalFileHandle(localFileHandle, 'localBackupFile');
+            const ok = await writeToLinkedLocalFile(localFileHandle, false);
+            if (ok) {
+              showToast(`Linked & synced to ${localFileHandle.name}`, 'success');
+              return;
+            }
+          } else {
+            showToast('Direct folder picker unavailable in this browser/APK — backups save to Downloads', 'info');
+          }
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          showToast('Could not link folder — try again', 'error');
+        }
+      };
+
       const saveAndSyncLocally = async () => {
+        const offPathEl = document.getElementById('offlineFolderPathInput');
+        if (offPathEl) {
+          state.store.syncConfig.offlineFolderPath = normalizeOfflineFolderPath(offPathEl.value);
+          offPathEl.value = state.store.syncConfig.offlineFolderPath;
+          saveStore(false);
+        }
         const jsonStr = JSON.stringify(buildBackupPayload(), null, 2);
         try {
+          if (localDirHandle) {
+            const ok = await writeToLinkedLocalDir(localDirHandle, false);
+            if (ok) {
+              showToast(`Synced locally to ${localDirHandle.name}/${getOfflineFolderPath()}`, 'success');
+              return;
+            }
+          }
+          if (window.showDirectoryPicker && !localFileHandle) {
+            localDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+            await persistLocalFileHandle(localDirHandle, 'localBackupDir');
+            const ok = await writeToLinkedLocalDir(localDirHandle, false);
+            if (ok) {
+              showToast(`Synced locally to ${localDirHandle.name}/${getOfflineFolderPath()}`, 'success');
+              return;
+            }
+          }
           if (window.showSaveFilePicker) {
             if (!localFileHandle) {
               localFileHandle = await window.showSaveFilePicker({
                 suggestedName: BACKUP_FILENAME,
                 types: [{ description: 'JSON Backup', accept: { 'application/json': ['.json'] } }],
               });
-              await persistLocalFileHandle(localFileHandle);
+              await persistLocalFileHandle(localFileHandle, 'localBackupFile');
             }
             const ok = await writeToLinkedLocalFile(localFileHandle, false);
             if (ok) {
@@ -7167,6 +7306,7 @@ function doPost(e) {
           }
         } catch (err) {
           if (err && err.name === 'AbortError') return;
+          localDirHandle = null;
           localFileHandle = null;
         }
         // Fallback for browsers/WebViews without File System Access API
@@ -7516,12 +7656,16 @@ function doPost(e) {
         const cfg = state.store.syncConfig;
         const now = Date.now();
 
-        // 1. Offline linked local file hourly auto-sync
-        if (cfg.autoHourlyLocalSync !== false && localFileHandle) {
+        // 1. Offline linked local folder/file hourly auto-sync
+        if (cfg.autoHourlyLocalSync !== false && (localDirHandle || localFileHandle)) {
           const lastOff = cfg.lastOfflineBackupAt ? new Date(cfg.lastOfflineBackupAt).getTime() : 0;
           if (!lastOff || isNaN(lastOff) || now - lastOff >= HOURLY_SYNC_INTERVAL_MS) {
             try {
-              await writeToLinkedLocalFile(localFileHandle, true);
+              if (localDirHandle) {
+                await writeToLinkedLocalDir(localDirHandle, true);
+              } else if (localFileHandle) {
+                await writeToLinkedLocalFile(localFileHandle, true);
+              }
             } catch (err) {}
           }
         }
@@ -8943,6 +9087,19 @@ function doPost(e) {
           }
         });
         document.getElementById('saveSyncLocalBtn').addEventListener('click', saveAndSyncLocally);
+        const offFolderInput = document.getElementById('offlineFolderPathInput');
+        if (offFolderInput) {
+          offFolderInput.addEventListener('change', (e) => {
+            state.store.syncConfig.offlineFolderPath = normalizeOfflineFolderPath(e.target.value);
+            e.target.value = state.store.syncConfig.offlineFolderPath;
+            saveStore(false);
+            renderSyncUI();
+          });
+        }
+        const pickOffBtn = document.getElementById('pickOfflineFolderBtn');
+        if (pickOffBtn) {
+          pickOffBtn.addEventListener('click', pickOfflineRootFolder);
+        }
         document.getElementById('exportMonthCsvBtn').addEventListener('click', exportCurrentMonthCSV);
 
         document.getElementById('toggleDriveGuideBtn').addEventListener('click', () => {
