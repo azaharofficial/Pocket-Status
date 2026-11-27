@@ -3039,10 +3039,17 @@ function doPost(e) {
         return Boolean(custom && custom.kind === 'liability');
       };
       const isNonCardLiabilityType = (type) => isLiabilityType(type) && !isCreditCardType(type);
-      const getAllAccountTypeKeys = () => [
-        ...DEFAULT_ACCOUNT_TYPE_ORDER,
-        ...getCustomAccountTypes().map((t) => t.key),
-      ];
+      const getDeletedAccountTypes = () =>
+        typeof state !== 'undefined' && state.store && Array.isArray(state.store.deletedAccountTypes)
+          ? state.store.deletedAccountTypes
+          : [];
+      const getAllAccountTypeKeys = () => {
+        const deleted = new Set(getDeletedAccountTypes());
+        return [
+          ...DEFAULT_ACCOUNT_TYPE_ORDER.filter((k) => !deleted.has(k)),
+          ...getCustomAccountTypes().map((t) => t.key),
+        ];
+      };
       const getAccountTypeOrder = () => {
         const allKeys = getAllAccountTypeKeys();
         const saved = typeof state !== 'undefined' && state.store && Array.isArray(state.store.accountTypeOrder)
@@ -3323,6 +3330,8 @@ function doPost(e) {
           accountTypeOrder: ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'],
           accountTypeLabels: {},
           customAccountTypes: [],
+        deletedAccountTypes: [],
+          deletedAccountTypes: [],
           includePrevMonthNetWorth: false,
           includeEmiPrincipalInCcLimit: true,
           themeMode: 'system',
@@ -3843,8 +3852,16 @@ function doPost(e) {
             return valid;
           })(),
           customAccountTypes,
+          deletedAccountTypes: (() => {
+            if (!Array.isArray(rawObj.deletedAccountTypes)) return [];
+            const usedTypes = new Set(accounts.map((a) => a.type));
+            return rawObj.deletedAccountTypes.filter((k) => DEFAULT_ACCOUNT_TYPE_ORDER.includes(k) && !usedTypes.has(k));
+          })(),
           accountTypeOrder: (() => {
-            const def = ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card', ...customAccountTypes.map((t) => t.key)];
+            const delSet = new Set(Array.isArray(rawObj.deletedAccountTypes) ? rawObj.deletedAccountTypes : []);
+            const usedSet = new Set(accounts.map((a) => a.type));
+            const activeBuiltIn = ['saving', 'wallet', 'cashback', 'due_from_others', 'due_to_others', 'credit_card'].filter((k) => !delSet.has(k) || usedSet.has(k));
+            const def = [...activeBuiltIn, ...customAccountTypes.map((t) => t.key)];
             if (!Array.isArray(rawObj.accountTypeOrder)) return def;
             const valid = rawObj.accountTypeOrder.filter((k) => def.includes(k));
             def.forEach((k) => { if (!valid.includes(k)) valid.push(k); });
@@ -5528,6 +5545,13 @@ function doPost(e) {
           });
         }
 
+        const deletedSet = new Set(getDeletedAccountTypes());
+        if (sectionsWrap) {
+          DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
+            const sec = sectionsWrap.querySelector(`[data-acc-type-section="${k}"]`);
+            if (sec) sec.classList.toggle('hidden', deletedSet.has(k));
+          });
+        }
         const typeOrder = getAccountTypeOrder();
         typeOrder.forEach((accType) => {
           const secEl = sectionsWrap ? sectionsWrap.querySelector(`[data-acc-type-section="${accType}"]`) : null;
@@ -5702,11 +5726,11 @@ function doPost(e) {
                     <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(acc.name)}</p>
                     <div class="flex items-baseline justify-between gap-2 text-[11px] text-slate-500">
                       <span class="truncate">Bill Date: <span class="font-bold text-slate-700">${escapeHtml(bill.billDateLabel)}</span></span>
-                      <span class="shrink-0 tabular-nums whitespace-nowrap text-right">Available Limit: <span class="font-extrabold ${getAccountBalanceColor(m.available, 'text-amber-600', 'text-rose-600')}">${formatINR(m.available)}</span></span>
+                      <span class="shrink-0 tabular-nums whitespace-nowrap text-right">Available Limit: <span class="text-sm font-extrabold ${getAccountBalanceColor(m.available, 'text-amber-600', 'text-rose-600')}">${formatINR(m.available)}</span></span>
                     </div>
                     <div class="flex items-baseline justify-between gap-2 text-[11px] text-slate-500">
                       <span class="truncate">Due Date: <span class="font-bold text-amber-700">${escapeHtml(bill.dueDateLabel)}</span></span>
-                      <span class="shrink-0 tabular-nums whitespace-nowrap text-right">Used Limit: <span class="font-extrabold ${getAccountBalanceColor(usedVal, 'text-rose-600', 'text-emerald-600')}">${formatINR(usedVal)}</span></span>
+                      <span class="shrink-0 tabular-nums whitespace-nowrap text-right">Used Limit: <span class="text-sm font-extrabold ${getAccountBalanceColor(usedVal, 'text-rose-600', 'text-emerald-600')}">${formatINR(usedVal)}</span></span>
                     </div>
                   </div>
                 </div>
@@ -6812,6 +6836,7 @@ function doPost(e) {
           accountTypeOrder: state.store.accountTypeOrder,
           accountTypeLabels: state.store.accountTypeLabels,
           customAccountTypes: state.store.customAccountTypes,
+          deletedAccountTypes: state.store.deletedAccountTypes,
           includePrevMonthNetWorth: state.store.includePrevMonthNetWorth,
           includeEmiPrincipalInCcLimit: state.store.includeEmiPrincipalInCcLimit,
         },
@@ -9591,12 +9616,15 @@ function doPost(e) {
         });
       };
 
+      let draftDeletedTypes = [];
+
       const renderAccountTypesEditorList = () => {
         const listEl = document.getElementById('accountTypesEditorList');
         if (!listEl) return;
 
+        const deletedSet = new Set(draftDeletedTypes);
         const allEntries = [
-          ...DEFAULT_ACCOUNT_TYPE_ORDER.map((k) => ({
+          ...DEFAULT_ACCOUNT_TYPE_ORDER.filter((k) => !deletedSet.has(k)).map((k) => ({
             key: k,
             label: draftAccountTypeLabels[k] !== undefined ? draftAccountTypeLabels[k] : ACCOUNT_TYPES[k].label,
             placeholder: ACCOUNT_TYPES[k].label,
@@ -9635,11 +9663,7 @@ function doPost(e) {
                   class="glass-inline-input flex-1"
                 />
                 <span class="px-1.5 py-0.5 rounded-md border text-[9px] font-bold shrink-0 ${badgeCls}">${badgeText}</span>
-                ${
-                  item.isCustom
-                    ? `<button type="button" data-del-custom-type="${escapeHtml(item.key)}" class="glass-icon-btn !w-6 !h-6 hover:!text-rose-600 shrink-0" aria-label="Delete account type" title="Delete account type">${getBinSvg('w-3 h-3')}</button>`
-                    : ''
-                }
+                <button type="button" data-del-acc-type="${escapeHtml(item.key)}" data-del-is-custom="${item.isCustom ? '1' : '0'}" class="glass-icon-btn !w-6 !h-6 hover:!text-rose-600 shrink-0" aria-label="Delete account type" title="Delete account type">${getBinSvg('w-3 h-3')}</button>
               </div>
             `;
           })
@@ -9657,15 +9681,26 @@ function doPost(e) {
           });
         });
 
-        listEl.querySelectorAll('[data-del-custom-type]').forEach((btn) => {
+        listEl.querySelectorAll('[data-del-acc-type]').forEach((btn) => {
           btn.addEventListener('click', () => {
-            const key = btn.dataset.delCustomType;
+            const key = btn.dataset.delAccType;
+            const isCustom = btn.dataset.delIsCustom === '1';
+            const totalRemaining =
+              DEFAULT_ACCOUNT_TYPE_ORDER.filter((k) => !draftDeletedTypes.includes(k)).length + draftCustomTypes.length;
+            if (totalRemaining <= 1) {
+              showToast('At least 1 account type is required', 'error');
+              return;
+            }
             const usedCount = state.store.accounts.filter((a) => a.type === key).length;
             if (usedCount > 0) {
               showToast(`Cannot delete: ${usedCount} account(s) use this type`, 'error');
               return;
             }
-            draftCustomTypes = draftCustomTypes.filter((t) => t.key !== key);
+            if (isCustom) {
+              draftCustomTypes = draftCustomTypes.filter((t) => t.key !== key);
+            } else if (!draftDeletedTypes.includes(key)) {
+              draftDeletedTypes.push(key);
+            }
             renderAccountTypesEditorList();
           });
         });
@@ -9677,6 +9712,7 @@ function doPost(e) {
           draftAccountTypeLabels[k] = getAccountTypeMeta(k).label;
         });
         draftCustomTypes = getCustomAccountTypes().map((t) => ({ ...t }));
+        draftDeletedTypes = [...getDeletedAccountTypes()];
         const nameInp = document.getElementById('newAccTypeNameInput');
         if (nameInp) nameInp.value = '';
         applyNewAccTypeKindUI('asset');
@@ -9814,14 +9850,18 @@ function doPost(e) {
         });
         document.getElementById('resetAccountTypesBtn').addEventListener('click', () => {
           draftAccountTypeLabels = {};
+          draftDeletedTypes = [];
           DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
             draftAccountTypeLabels[k] = ACCOUNT_TYPES[k].label;
           });
           renderAccountTypesEditorList();
         });
         document.getElementById('saveAccountTypesBtn').addEventListener('click', () => {
+          const cleanDeleted = draftDeletedTypes.filter(
+            (k) => DEFAULT_ACCOUNT_TYPE_ORDER.includes(k) && !state.store.accounts.some((a) => a.type === k)
+          );
           const cleanLabels = {};
-          DEFAULT_ACCOUNT_TYPE_ORDER.forEach((k) => {
+          DEFAULT_ACCOUNT_TYPE_ORDER.filter((k) => !cleanDeleted.includes(k)).forEach((k) => {
             const val = String(draftAccountTypeLabels[k] || '').trim().slice(0, 32);
             if (val && val !== ACCOUNT_TYPES[k].label) {
               cleanLabels[k] = val;
@@ -9835,11 +9875,15 @@ function doPost(e) {
               color: normalizeHex(t.color, '#0ea5e9'),
             }));
 
+          state.store.deletedAccountTypes = cleanDeleted;
           state.store.accountTypeLabels = cleanLabels;
           state.store.customAccountTypes = cleanCustom;
 
           // Keep existing order and append any newly added custom types
-          const allKeys = [...DEFAULT_ACCOUNT_TYPE_ORDER, ...cleanCustom.map((t) => t.key)];
+          const allKeys = [
+            ...DEFAULT_ACCOUNT_TYPE_ORDER.filter((k) => !cleanDeleted.includes(k)),
+            ...cleanCustom.map((t) => t.key),
+          ];
           const prevOrder = Array.isArray(state.store.accountTypeOrder) ? state.store.accountTypeOrder : allKeys;
           const nextOrder = prevOrder.filter((k) => allKeys.includes(k));
           allKeys.forEach((k) => { if (!nextOrder.includes(k)) nextOrder.push(k); });
