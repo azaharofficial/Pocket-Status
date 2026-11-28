@@ -1903,12 +1903,9 @@
           </div>
         </div>
 
-        <label class="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
-          <input id="offlineAutoHourlyToggle" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0" />
-          <div class="min-w-0">
-            <span class="block text-xs font-medium text-slate-700 leading-snug">Auto-sync local data to linked file every hour</span>
-            <span id="offlineHourlyNextLabel" class="block text-[10px] text-slate-500 mt-0.5">Link a local file above to enable silent hourly sync</span>
-          </div>
+        <label class="flex items-center gap-2.5 pt-1 cursor-pointer select-none">
+          <input id="offlineAutoHourlyToggle" type="checkbox" class="w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0" />
+          <span class="block text-xs font-medium text-slate-700 leading-snug">Auto-sync local data with linked file after every changes</span>
         </label>
 
         <div class="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
@@ -1978,33 +1975,13 @@
           <input id="syncFolderPathInput" type="text" placeholder="Apps/Pocket Apps/Backups/Pocket Status" class="w-full h-9 px-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white" />
         </div>
 
-        <!-- Back Up Now / Restore Now / Disconnect Row -->
-        <div class="flex flex-wrap items-center gap-2">
-          <button id="driveBackupNowBtn" type="button" class="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 disabled:opacity-45 disabled:cursor-not-allowed border border-slate-200 text-slate-800 font-bold text-xs transition active:scale-95">
-            <span>☁ Back Up Now</span>
-          </button>
-          <button id="driveRestoreBtn" type="button" class="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 disabled:opacity-45 disabled:cursor-not-allowed border border-slate-200 text-slate-800 font-bold text-xs transition active:scale-95">
-            <span>⬇ Restore Now</span>
-          </button>
-          <button id="disconnectDriveBtn" type="button" class="hidden inline-flex items-center justify-center h-9 px-3 rounded-xl bg-slate-100 hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-rose-700 text-xs font-bold transition active:scale-95" title="Disconnect Google Drive">
-            Disconnect
-          </button>
-        </div>
-
-        <!-- Auto-sync Checkboxes -->
+        <!-- Auto-sync Checkbox -->
         <div class="space-y-2 pt-0.5">
           <label class="flex items-start gap-2.5 cursor-pointer select-none">
             <input id="syncAutoBackupToggle" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0" />
             <div class="min-w-0">
               <span class="block text-xs font-bold text-slate-800 leading-snug">Auto-sync with Google Drive after changes</span>
               <span class="block text-[10px] text-slate-500 mt-0.5">Automatically syncs changes to Drive while connected</span>
-            </div>
-          </label>
-          <label class="flex items-start gap-2.5 cursor-pointer select-none">
-            <input id="driveAutoHourlyToggle" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0" />
-            <div class="min-w-0">
-              <span class="block text-xs font-bold text-slate-800 leading-snug">Auto-sync local data to Google Drive every hour</span>
-              <span id="driveHourlyNextLabel" class="block text-[10px] text-slate-500 mt-0.5">Connect Google Drive above to enable hourly auto-sync</span>
             </div>
           </label>
         </div>
@@ -4044,7 +4021,10 @@ function doPost(e) {
       const saveStore = (triggerAutoSync = true) => {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state.store));
-          if (triggerAutoSync) scheduleAutoDriveSync();
+          if (triggerAutoSync) {
+            scheduleAutoDriveSync();
+            scheduleAutoLocalSync();
+          }
         } catch (err) {
           showToast('Device storage full — export a JSON backup', 'error');
         }
@@ -6735,8 +6715,6 @@ function doPost(e) {
         if (autoEl) autoEl.checked = Boolean(cfg.autoBackup);
         const offHourlyEl = document.getElementById('offlineAutoHourlyToggle');
         if (offHourlyEl) offHourlyEl.checked = cfg.autoHourlyLocalSync !== false;
-        const drvHourlyEl = document.getElementById('driveAutoHourlyToggle');
-        if (drvHourlyEl) drvHourlyEl.checked = cfg.autoHourlyDriveSync !== false;
 
         const connectBtn = document.getElementById('connectDriveBtn');
         const connectLabel = document.getElementById('connectDriveLabel');
@@ -6744,19 +6722,13 @@ function doPost(e) {
         if (connectLabel) {
           connectLabel.textContent = connected ? '✓ Connected' : '🔗 Connect';
         }
-        const disconnectBtn = document.getElementById('disconnectDriveBtn');
-        if (disconnectBtn) {
-          disconnectBtn.classList.toggle('hidden', !connected || target.mode !== 'oauth');
-        }
 
         const syncNowLabel = document.getElementById('driveSyncNowLabel');
         if (syncNowLabel) {
           syncNowLabel.textContent = state.syncBusy ? '⏳ Syncing...' : '☁ One-Click Sync with Google Drive';
         }
-        const canAct = (target.mode === 'script' || connected) && !state.syncBusy;
-        document.getElementById('driveSyncNowBtn').disabled = state.syncBusy;
-        document.getElementById('driveBackupNowBtn').disabled = !canAct;
-        document.getElementById('driveRestoreBtn').disabled = !canAct;
+        const syncNowBtn = document.getElementById('driveSyncNowBtn');
+        if (syncNowBtn) syncNowBtn.disabled = state.syncBusy;
 
         const pill = document.getElementById('syncStatusPill');
         const dot = document.getElementById('syncStatusDot');
@@ -6807,31 +6779,6 @@ function doPost(e) {
             : 'No local folder linked';
         }
 
-        const offNextEl = document.getElementById('offlineHourlyNextLabel');
-        if (offNextEl) {
-          if (cfg.autoHourlyLocalSync === false) {
-            offNextEl.textContent = 'Hourly local sync is paused';
-          } else if (localDirHandle || localFileHandle) {
-            offNextEl.textContent = cfg.lastOfflineBackupAt
-              ? `Next hourly sync: ${formatNextHourlyLabel(cfg.lastOfflineBackupAt)}`
-              : 'Hourly sync active (runs every 1 hour)';
-          } else {
-            offNextEl.textContent = 'Tap "📁 Folder" or "Save & Sync Locally" to link a folder for hourly auto-sync';
-          }
-        }
-
-        const drvNextEl = document.getElementById('driveHourlyNextLabel');
-        if (drvNextEl) {
-          if (cfg.autoHourlyDriveSync === false) {
-            drvNextEl.textContent = 'Hourly Drive sync is paused';
-          } else if (connected) {
-            drvNextEl.textContent = cfg.lastSyncedAt
-              ? `Next hourly sync: ${formatNextHourlyLabel(cfg.lastSyncedAt)}`
-              : 'Hourly sync active (runs every 1 hour)';
-          } else {
-            drvNextEl.textContent = 'Connect Google Drive above to enable hourly auto-sync';
-          }
-        }
       };
 
       const renderSettingsPage = () => {
@@ -7652,46 +7599,28 @@ function doPost(e) {
         }, 2000);
       };
 
-      const runHourlyAutoSyncCheck = async () => {
+      let autoLocalSyncTimer = null;
+      const scheduleAutoLocalSync = () => {
         const cfg = state.store.syncConfig;
-        const now = Date.now();
-
-        // 1. Offline linked local folder/file hourly auto-sync
-        if (cfg.autoHourlyLocalSync !== false && (localDirHandle || localFileHandle)) {
-          const lastOff = cfg.lastOfflineBackupAt ? new Date(cfg.lastOfflineBackupAt).getTime() : 0;
-          if (!lastOff || isNaN(lastOff) || now - lastOff >= HOURLY_SYNC_INTERVAL_MS) {
-            try {
-              if (localDirHandle) {
-                await writeToLinkedLocalDir(localDirHandle, true);
-              } else if (localFileHandle) {
-                await writeToLinkedLocalFile(localFileHandle, true);
-              }
-            } catch (err) {}
-          }
-        }
-
-        // 2. Online Google Drive hourly auto-sync (syncs local data to Drive)
-        if (cfg.autoHourlyDriveSync !== false && isDriveReady() && !state.syncBusy) {
-          const lastDrv = cfg.lastSyncedAt ? new Date(cfg.lastSyncedAt).getTime() : 0;
-          if (!lastDrv || isNaN(lastDrv) || now - lastDrv >= HOURLY_SYNC_INTERVAL_MS) {
-            try {
-              await backupToDriveNow(true);
-            } catch (err) {}
-          }
-        }
+        if (cfg.autoHourlyLocalSync === false) return;
+        if (!localDirHandle && !localFileHandle) return;
+        if (autoLocalSyncTimer) clearTimeout(autoLocalSyncTimer);
+        autoLocalSyncTimer = setTimeout(async () => {
+          try {
+            if (localDirHandle) {
+              await writeToLinkedLocalDir(localDirHandle, true);
+            } else if (localFileHandle) {
+              await writeToLinkedLocalFile(localFileHandle, true);
+            }
+          } catch (err) {}
+        }, 1200);
       };
 
       const startHourlyAutoSyncScheduler = () => {
-        if (hourlySyncIntervalId) clearInterval(hourlySyncIntervalId);
-        // Check every 60 seconds so hourly sync fires reliably even after sleep/throttling
-        hourlySyncIntervalId = setInterval(runHourlyAutoSyncCheck, 60 * 1000);
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'visible') runHourlyAutoSyncCheck();
-        });
-        window.addEventListener('online', () => {
-          runHourlyAutoSyncCheck();
-        });
-        setTimeout(runHourlyAutoSyncCheck, 3000);
+        if (hourlySyncIntervalId) {
+          clearInterval(hourlySyncIntervalId);
+          hourlySyncIntervalId = null;
+        }
       };
 
       // =======================================================================
@@ -9115,10 +9044,7 @@ function doPost(e) {
           });
         }
         document.getElementById('connectDriveBtn').addEventListener('click', connectDrive);
-        document.getElementById('disconnectDriveBtn').addEventListener('click', disconnectDrive);
         document.getElementById('driveSyncNowBtn').addEventListener('click', syncDriveNow);
-        document.getElementById('driveBackupNowBtn').addEventListener('click', () => backupToDriveNow(false));
-        document.getElementById('driveRestoreBtn').addEventListener('click', restoreFromDrive);
         document.getElementById('syncAutoBackupToggle').addEventListener('change', (e) => {
           state.store.syncConfig.autoBackup = e.target.checked;
           saveStore(false);
@@ -9128,15 +9054,8 @@ function doPost(e) {
           state.store.syncConfig.autoHourlyLocalSync = e.target.checked;
           saveStore(false);
           renderSyncUI();
-          showToast(e.target.checked ? 'Hourly local file auto-sync enabled' : 'Hourly local file auto-sync paused', 'info');
-          if (e.target.checked) runHourlyAutoSyncCheck();
-        });
-        document.getElementById('driveAutoHourlyToggle').addEventListener('change', (e) => {
-          state.store.syncConfig.autoHourlyDriveSync = e.target.checked;
-          saveStore(false);
-          renderSyncUI();
-          showToast(e.target.checked ? 'Hourly Google Drive auto-sync enabled' : 'Hourly Google Drive auto-sync paused', 'info');
-          if (e.target.checked) runHourlyAutoSyncCheck();
+          showToast(e.target.checked ? 'Local auto-sync after changes enabled' : 'Local auto-sync after changes paused', 'info');
+          if (e.target.checked) scheduleAutoLocalSync();
         });
         document.getElementById('copyAppsScriptBtn').addEventListener('click', () => {
           if (copyTextSafe(APPS_SCRIPT_CODE)) {
