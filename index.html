@@ -1851,22 +1851,21 @@
 
       <!-- 3. OFFLINE BACKUP & LOCAL SYNC SLAB -->
       <div class="rounded-2xl bg-white border border-slate-200 p-4 space-y-3 shadow-sm">
-        <div class="flex items-start justify-between gap-2">
+        <div class="space-y-1.5">
           <div class="flex items-center gap-2.5 min-w-0">
             <span class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center shrink-0">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 4h11l3 3v12a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1zm3 0v5h7V4M8 20v-6h8v6" />
               </svg>
             </span>
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <h2 class="text-sm font-extrabold text-slate-900 truncate">Offline</h2>
               <p id="offlineLastBackupLabel" class="text-[11px] text-slate-500 truncate">Last offline backup: Never</p>
             </div>
           </div>
-          <span id="offlineFileStatus" class="shrink-0 text-[11px] font-semibold text-slate-500 text-right max-w-[140px] truncate">No local file linked</span>
+          <p id="offlineFileStatus" class="text-[11px] font-semibold text-slate-500 break-words leading-snug">No local folder linked</p>
         </div>
 
-        <p id="settingsStorageInfo" class="text-[11px] text-slate-500">Stored offline on this device.</p>
 
         <div class="space-y-2">
           <button id="exportJsonBtn" type="button" class="w-full flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition active:scale-[0.98]">
@@ -1896,7 +1895,7 @@
         <div class="space-y-1">
           <label for="offlineFolderPathInput" class="block text-[11px] font-bold text-slate-700">Offline Folder Path</label>
           <div class="grid grid-cols-[1fr_auto] gap-2 items-center">
-            <input id="offlineFolderPathInput" type="text" placeholder="Apps/Pocket Apps/Backups/Pocket Status" class="min-w-0 h-9 px-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white" />
+            <input id="offlineFolderPathInput" type="text" placeholder="No folder selected (shows up to 4 folder steps)" class="min-w-0 h-9 px-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white" />
             <button id="pickOfflineFolderBtn" type="button" class="inline-flex items-center gap-1 h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold transition active:scale-95" title="Choose local base folder">
               <span>📁 Folder</span>
             </button>
@@ -1908,14 +1907,6 @@
           <span class="block text-xs font-medium text-slate-700 leading-snug">Auto-sync local data with linked file after every changes</span>
         </label>
 
-        <div class="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
-          <button id="exportMonthCsvBtn" type="button" class="py-2 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-[11px] font-bold transition active:scale-95 truncate" title="Export selected month as CSV">
-            <span id="exportMonthCsvSub">Export CSV (Month)</span>
-          </button>
-          <button id="clearAllDataBtn" type="button" class="py-2 px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[11px] font-bold transition active:scale-95">
-            Clear All Data
-          </button>
-        </div>
       </div>
 
       <!-- 4. ONLINE GOOGLE DRIVE SYNC SLAB -->
@@ -2847,7 +2838,7 @@
       const STORAGE_KEY = 'pocket_status_final_v1';
       const LEGACY_KEYS = ['pocket_status_v2', 'pocket_status_v1'];
       const DEFAULT_DRIVE_FOLDER_PATH = 'Apps/Pocket Apps/Backups/Pocket Status';
-      const DEFAULT_OFFLINE_FOLDER_PATH = 'Apps/Pocket Apps/Backups/Pocket Status';
+      const DEFAULT_OFFLINE_FOLDER_PATH = '';
       const BACKUP_FILENAME = 'pocket-status-backup.json';
       const CONTACT_EMAIL = 'azaharofficial@gmail.com';
 
@@ -2987,33 +2978,41 @@ function doPost(e) {
 
       const formatLastNFolders = (rawPath, maxFolders = 4) => {
         const parts = String(rawPath || '')
-          .split(/[\/\\]+/)
+          .split(/[\/\\>]+/)
           .map((s) => s.trim())
           .filter(Boolean);
         return parts.slice(-maxFolders).join('/');
       };
 
       const normalizeOfflineFolderPath = (rawPath) => {
-        const formatted = formatLastNFolders(rawPath, 4);
-        return formatted || DEFAULT_OFFLINE_FOLDER_PATH;
+        return formatLastNFolders(rawPath, 4);
       };
 
       const getOfflineFolderPath = () =>
         normalizeOfflineFolderPath(state?.store?.syncConfig?.offlineFolderPath);
 
-      const resolveOfflinePathWithHandle = (dirName) => {
+      const resolveOfflinePathWithHandle = (dirName, isFreshPick = false) => {
+        const cleanName = formatLastNFolders(dirName, 4);
         const current = getOfflineFolderPath();
-        const cleanName = String(dirName || '').trim();
         if (!cleanName) return current;
-        const parts = current.split('/').filter(Boolean);
-        if (parts.length === 0) return formatLastNFolders(cleanName, 4);
-        const last = parts[parts.length - 1];
-        if (last.toLowerCase() === cleanName.toLowerCase()) {
-          parts[parts.length - 1] = cleanName;
-          return parts.slice(-4).join('/');
+        // On a fresh folder pick, keep existing multi-folder path only if its last folder matches; otherwise use picked folder name
+        if (isFreshPick) {
+          if (current) {
+            const parts = current.split('/').filter(Boolean);
+            const last = parts[parts.length - 1] || '';
+            if (last.toLowerCase() === cleanName.toLowerCase()) {
+              parts[parts.length - 1] = cleanName;
+              return parts.slice(-4).join('/');
+            }
+          }
+          return cleanName;
         }
-        parts[parts.length - 1] = cleanName;
-        return parts.slice(-4).join('/');
+        // When syncing or reloading, preserve the user's manually entered path (up to 4 folders)
+        if (!current) return cleanName;
+        if (current.startsWith('Apps/Pocket Apps/Backups/') && cleanName.toLowerCase() !== 'pocket status') {
+          return cleanName;
+        }
+        return formatLastNFolders(current, 4);
       };
 
       const ACCOUNT_TYPES = {
@@ -6791,7 +6790,7 @@ function doPost(e) {
         const fileStatEl = document.getElementById('offlineFileStatus');
         if (fileStatEl) {
           const statusText = localDirHandle
-            ? `Linked: ${resolvedOffPath}`
+            ? `Linked: ${resolvedOffPath || localDirHandle.name}`
             : localFileHandle
             ? `Linked: ${localFileHandle.name}`
             : cfg.linkedFileName
@@ -6804,12 +6803,6 @@ function doPost(e) {
       };
 
       const renderSettingsPage = () => {
-        const monthTxs = getTransactionsForMonth(state.selectedYear, state.selectedMonth);
-        const mk = getSelectedMonthKey();
-        document.getElementById('settingsStorageInfo').textContent =
-          `${state.store.accounts.length} accounts • ${state.store.categories.length} categories • ${state.store.transactions.length} entries (${monthTxs.length} in ${MONTH_SHORT[state.selectedMonth]}).`;
-        document.getElementById('exportMonthCsvSub').textContent =
-          `Export CSV (${MONTH_SHORT[state.selectedMonth]})`;
         const hasCaPin = /^\d{4}$/.test(String(state.store.security.currentAssetPin || ''));
         const caPinLabel = document.getElementById('changeCaPinLabel');
         if (caPinLabel) {
@@ -7122,7 +7115,7 @@ function doPost(e) {
           if (dirHandle) {
             localDirHandle = dirHandle;
             if (dirHandle.name) {
-              const displayPath = resolveOfflinePathWithHandle(dirHandle.name);
+              const displayPath = resolveOfflinePathWithHandle(dirHandle.name, false);
               state.store.syncConfig.offlineFolderPath = displayPath;
               state.store.syncConfig.linkedFileName = displayPath;
             }
@@ -7137,7 +7130,7 @@ function doPost(e) {
         } catch (err) {}
       };
 
-      const writeToLinkedLocalDir = async (dirHandle, silent = false) => {
+      const writeToLinkedLocalDir = async (dirHandle, silent = false, isFreshPick = false) => {
         if (!dirHandle || localSyncBusy) return false;
         localSyncBusy = true;
         try {
@@ -7156,7 +7149,7 @@ function doPost(e) {
           const writable = await fileHandle.createWritable();
           await writable.write(jsonStr);
           await writable.close();
-          const displayPath = resolveOfflinePathWithHandle(dirHandle.name);
+          const displayPath = resolveOfflinePathWithHandle(dirHandle.name, isFreshPick);
           state.store.syncConfig.offlineFolderPath = displayPath;
           state.store.syncConfig.linkedFileName = displayPath;
           state.store.syncConfig.lastOfflineBackupAt = new Date().toISOString();
@@ -7197,17 +7190,11 @@ function doPost(e) {
       };
 
       const pickOfflineRootFolder = async () => {
-        const offPathEl = document.getElementById('offlineFolderPathInput');
-        if (offPathEl) {
-          state.store.syncConfig.offlineFolderPath = normalizeOfflineFolderPath(offPathEl.value);
-          offPathEl.value = state.store.syncConfig.offlineFolderPath;
-          saveStore(false);
-        }
         try {
           if (window.showDirectoryPicker) {
             localDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
             await persistLocalFileHandle(localDirHandle, 'localBackupDir');
-            const ok = await writeToLinkedLocalDir(localDirHandle, false);
+            const ok = await writeToLinkedLocalDir(localDirHandle, false, true);
             if (ok) {
               showToast(`Linked & synced to ${getOfflineFolderPath()}`, 'success');
               return;
@@ -7251,7 +7238,7 @@ function doPost(e) {
           if (window.showDirectoryPicker && !localFileHandle) {
             localDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
             await persistLocalFileHandle(localDirHandle, 'localBackupDir');
-            const ok = await writeToLinkedLocalDir(localDirHandle, false);
+            const ok = await writeToLinkedLocalDir(localDirHandle, false, true);
             if (ok) {
               showToast(`Synced locally to ${getOfflineFolderPath()}`, 'success');
               return;
@@ -9038,18 +9025,23 @@ function doPost(e) {
         document.getElementById('saveSyncLocalBtn').addEventListener('click', saveAndSyncLocally);
         const offFolderInput = document.getElementById('offlineFolderPathInput');
         if (offFolderInput) {
-          offFolderInput.addEventListener('change', (e) => {
-            state.store.syncConfig.offlineFolderPath = normalizeOfflineFolderPath(e.target.value);
-            e.target.value = state.store.syncConfig.offlineFolderPath;
+          const commitOfflineFolderPath = (el) => {
+            const formatted = normalizeOfflineFolderPath(el.value);
+            state.store.syncConfig.offlineFolderPath = formatted;
+            if (formatted && (localDirHandle || state.store.syncConfig.linkedFileName)) {
+              state.store.syncConfig.linkedFileName = formatted;
+            }
+            el.value = formatted;
             saveStore(false);
             renderSyncUI();
-          });
+          };
+          offFolderInput.addEventListener('change', (e) => commitOfflineFolderPath(e.target));
+          offFolderInput.addEventListener('blur', (e) => commitOfflineFolderPath(e.target));
         }
         const pickOffBtn = document.getElementById('pickOfflineFolderBtn');
         if (pickOffBtn) {
           pickOffBtn.addEventListener('click', pickOfflineRootFolder);
         }
-        document.getElementById('exportMonthCsvBtn').addEventListener('click', exportCurrentMonthCSV);
 
         document.getElementById('toggleDriveGuideBtn').addEventListener('click', () => {
           document.getElementById('driveSetupGuideBox').classList.toggle('hidden');
@@ -9113,33 +9105,6 @@ function doPost(e) {
           document.getElementById('vaultPassModal').classList.add('hidden');
           pendingVaultPassCb = null;
           if (cb && typeof cb.onPassphrase === 'function') cb.onPassphrase(pass);
-        });
-
-        // Double-confirmed Clear All Data
-        document.getElementById('clearAllDataBtn').addEventListener('click', () => {
-          openConfirm(
-            'Clear All Data? (Step 1 of 2)',
-            'This will erase all transactions and per-month opening balances across every month.',
-            () => {
-              setTimeout(() => {
-                openConfirm(
-                  'Final Confirmation (Step 2 of 2)',
-                  'Are you absolutely sure? This cannot be undone unless you have a backup.',
-                  () => {
-                    state.store.transactions = [];
-                    state.store.accounts.forEach((a) => {
-                      if (!isCreditCardType(a.type)) a.openingBalances = {};
-                    });
-                    saveStore();
-                    renderActiveView();
-                    showToast('All transaction data cleared', 'info');
-                  },
-                  'Yes, Clear All'
-                );
-              }, 80);
-            },
-            'Continue'
-          );
         });
 
         // About Section: Copy Email
